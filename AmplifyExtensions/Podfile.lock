@@ -1,0 +1,41 @@
+PODS:
+  - Amplify (1.0.5):
+    - Amplify/Default (= 1.0.5)
+  - Amplify/Default (1.0.5)
+  - PromiseKit (6.13.1):
+    - PromiseKit/CorePromise (= 6.13.1)
+    - PromiseKit/Foundation (= 6.13.1)
+    - PromiseKit/UIKit (= 6.13.1)
+  - PromiseKit/CorePromise (6.13.1)
+  - PromiseKit/Foundation (6.13.1):
+    - PromiseKit/CorePromise
+  - PromiseKit/UIKit (6.13.1):
+    - PromiseKit/CorePromise
+  - SwiftFormat/CLI (0.44.17)
+  - SwiftLint (0.39.2)
+
+DEPENDENCIES:
+  - Amplify (from `../`)
+  - PromiseKit (~> 6.13)
+  - SwiftFormat/CLI
+  - SwiftLint
+
+SPEC REPOS:
+  https://cdn.cocoapods.org/:
+    - PromiseKit
+    - SwiftFormat
+    - SwiftLint
+
+EXTERNAL SOURCES:
+  Amplify:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  Amplify: f780a637316aebf3a17ae4062fc352559f1a3455
+  PromiseKit: 28fda91c973cc377875d8c0ea4f973013c05b6db
+  SwiftFormat: 3b5caa6389b2b9adbc00e133b3ccc8c6e687a6a4
+  SwiftLint: 22ccbbe3b8008684be5955693bab135e0ed6a447
+
+PODFILE CHECKSUM: a6d7f6ff9077310774a1a425ca3a32fa6e3a1ce2
+
+COCOAPODS: 1.9.3
