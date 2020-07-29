@@ -33,7 +33,7 @@ public extension AmplifyOperation {
 
 func test() {
     Amplify.Storage.getURL(key: "", resultListener: { _ in
-        
+
     })
     .promise
     .map(on: .main) { url in

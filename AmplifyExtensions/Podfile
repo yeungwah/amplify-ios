@@ -3,12 +3,20 @@ load '../build-support/dependencies.rb'
 platform :ios, '11.0'
 
 target 'AmplifyPromiseKit' do
-  # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
 
-  # Pods for PromiseKit
   pod 'Amplify', path: '../'
   pod 'PromiseKit', '~> 6.13'
+
+  include_build_tools!
+
+end
+
+target 'AmplifyKingfisher' do
+  use_frameworks!
+
+  pod 'Amplify', path: '../'
+  pod 'Kingfisher', '~> 5.14'
 
   include_build_tools!
 
