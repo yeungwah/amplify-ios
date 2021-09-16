@@ -8,6 +8,46 @@
 import Foundation
 import Combine
 
+public protocol LazyMarker {
+    var id: String { get }
+}
+public class Lazy<ModelType: Model>: Codable, LazyMarker {
+
+    public let instance: ModelType?
+    public let id: String
+
+    init(id: String) {
+        self.id = id
+        self.instance = nil
+    }
+    
+    
+    init(_ instance: ModelType) {
+        self.instance = instance
+        self.id = instance.id
+    }
+
+    func load() {
+        // use the id and Model, and query for the data
+        // Amplify.DataStore.query(Model, where: id) {
+        
+        // store self.instance = result
+    }
+    
+    // Decoder gets called when the object is created
+    required convenience public init(from decoder: Decoder) throws {
+        // "post": //decoder information
+        let json = try JSONValue(from: decoder)
+        // json = { id: "", modelName: "Post4" }
+        
+        print("Decoding \(json)")
+        
+        // TODO: extract information from json and store
+        
+        self.init(id: "id")
+    }
+}
+
 /// `List<ModelType>` is a custom `Collection` that is capable of loading records from a data source. This is especially
 /// useful when dealing with Model associations that need to be lazy loaded. Lazy loading is performed when you access
 /// the `Collection` methods by retrieving the data from the underlying data source and then stored into this object,
