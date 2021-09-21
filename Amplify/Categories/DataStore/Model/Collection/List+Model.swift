@@ -9,18 +9,18 @@ import Foundation
 import Combine
 
 public protocol LazyModelMarker {
-    var id: String { get }
+    var id: Model.Identifier { get }
 }
 
 public protocol LazyModelProvider {
     associatedtype Instance: Model
-    func fetch() -> Result<Instance, DataStoreError>
-    func fetch(completion: @escaping (Result<Instance, DataStoreError>) -> Void)
+    func fetch() -> Result<Instance, CoreError>
+    func fetch(completion: @escaping (Result<Instance, CoreError>) -> Void)
 }
 
 public class LazyModel<ModelType: Model>: Codable, LazyModelMarker, LazyModelProvider {
 
-    public let id: String
+    public let id: Model.Identifier
     var loadedState: LoadedState
 
     enum LoadedState {
@@ -35,7 +35,7 @@ public class LazyModel<ModelType: Model>: Codable, LazyModelMarker, LazyModelPro
     
     init(_ instance: ModelType) {
         self.id = instance.id
-        self.loadedState = .notLoaded
+        self.loadedState = .loaded(instance)
     }
 
     public var instance: ModelType? {
@@ -57,20 +57,16 @@ public class LazyModel<ModelType: Model>: Codable, LazyModelMarker, LazyModelPro
         }
         
         set {
-            switch loadedState {
-            case .loaded:
-                Amplify.log.error("Error")
-                return
-            case .notLoaded:
-                loadedState = .loaded(newValue!)
-            }
+            loadedState = .loaded(newValue!)
         }
     }
     
-    public func fetch() -> Result<ModelType, DataStoreError> {
+    public func fetch() -> Result<ModelType, CoreError> {
         let semaphore = DispatchSemaphore(value: 0)
-        var loadResult: Result<ModelType, DataStoreError> =
-            .failure(.unknown("Failed to Query DataStore.", "See underlying DataStoreError for more details.", nil))
+        var loadResult: Result<ModelType, CoreError> =
+            .failure(CoreError.loadOperation("Failed to Query DataStore.",
+                                             "See underlying DataStoreError for more details.",
+                                             nil))
         
         fetch { result in
             defer {
@@ -89,7 +85,7 @@ public class LazyModel<ModelType: Model>: Codable, LazyModelMarker, LazyModelPro
         return loadResult
     }
     
-    public func fetch(completion: (Result<ModelType, DataStoreError>) -> Void) {
+    public func fetch(completion: (Result<ModelType, CoreError>) -> Void) {
         switch loadedState {
         case .loaded(let instance):
             completion(.success(instance))
@@ -101,9 +97,10 @@ public class LazyModel<ModelType: Model>: Codable, LazyModelMarker, LazyModelPro
                     completion(.success(instance!))
                 case .failure(let error):
                     Amplify.DataStore.log.error(error: error)
-                    completion(.failure(DataStoreError.unknown("Failed to Query DataStore.",
-                                                               "See underlying DataStoreError for more details.",
-                                                               error)))
+                    completion(
+                        .failure(CoreError.loadOperation("Failed to Query DataStore.",
+                                                         "See underlying DataStoreError for more details.",
+                                                         nil)))
                 }
             }
         }
