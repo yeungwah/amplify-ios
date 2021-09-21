@@ -18,7 +18,7 @@ public protocol LazyModelProvider {
     func fetch(completion: @escaping (Result<Instance, DataStoreError>) -> Void)
 }
 
-public class LazyModel<ModelType: Model>: Codable, LazyModelMarker {
+public class LazyModel<ModelType: Model>: Codable, LazyModelMarker, LazyModelProvider {
 
     public let id: String
     var loadedState: LoadedState
@@ -44,7 +44,7 @@ public class LazyModel<ModelType: Model>: Codable, LazyModelMarker {
             case .loaded(let instance):
                 return instance
             case .notLoaded:
-                let result = load()
+                let result = fetch()
                 switch result {
                 case .success(let instance):
                     loadedState = .loaded(instance)
@@ -67,12 +67,12 @@ public class LazyModel<ModelType: Model>: Codable, LazyModelMarker {
         }
     }
     
-    public func load() -> Result<ModelType, DataStoreError> {
+    public func fetch() -> Result<ModelType, DataStoreError> {
         let semaphore = DispatchSemaphore(value: 0)
         var loadResult: Result<ModelType, DataStoreError> =
             .failure(.unknown("Failed to Query DataStore.", "See underlying DataStoreError for more details.", nil))
         
-        load { result in
+        fetch { result in
             defer {
                 semaphore.signal()
             }
@@ -89,7 +89,7 @@ public class LazyModel<ModelType: Model>: Codable, LazyModelMarker {
         return loadResult
     }
     
-    public func load(completion: (Result<ModelType, DataStoreError>) -> Void) {
+    public func fetch(completion: (Result<ModelType, DataStoreError>) -> Void) {
         switch loadedState {
         case .loaded(let instance):
             completion(.success(instance))
