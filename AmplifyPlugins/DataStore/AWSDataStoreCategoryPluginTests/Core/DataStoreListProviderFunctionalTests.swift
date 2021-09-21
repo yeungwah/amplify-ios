@@ -35,14 +35,19 @@ class DataStoreListProviderFunctionalTests: BaseDataStoreTests {
             case .success(let comment):
                 print(comment)
 
-                if let post = comment.post {
-                    print("post id not yet loaded: \(post.id)")
-                    print("post instance: \(post.instance)")
-                    print("Eager loaded post \(post)")
-                } else {
-                    print("Lazy loading post... ")
-
+                guard let postInternal = comment.post else {
+                    XCTFail("Post is nil")
+                    return
                 }
+
+                guard case .notLoaded = postInternal.loadedState else {
+                    XCTFail("Should not be in loaded state")
+                    return
+                }
+
+                print("Lazy loading post... ")
+                print("Post instance: \(postInternal.instance)")
+                print("Loaded state: \(postInternal.loadedState)")
 
                 saveCommentSuccess.fulfill()
             case .failure(let error):

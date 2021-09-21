@@ -93,20 +93,19 @@ extension Statement: StatementModelConvertible {
             if let association = field.association {
                 switch association {
                 case .belongsTo(let associatedFieldName, let targetName):
-                    print("Lazy Model Init \(associatedFieldName) \(targetName)")
-
+                    print("Lazy Model belongsTo \(associatedFieldName) \(targetName)")
                     if let id = value as? String {
                         // what is the field's type name?
-                        if case .model(let modelName) = field.type {
-                            let lazyModel = Lazy<AnyModel>.lazyInit(id: id, modelName: modelName)
+                        if case .model = field.type {
+                            let lazyModel = LazyModel<AnyModel>.lazyInit(id: id)
                             modelDictionary.updateValue(lazyModel, forKeyPath: field.name)
                         }
                     }
                 case .hasOne(let associatedFieldName, let targetName):
-                    print("Lazy Model Init \(associatedFieldName) \(targetName)")
+                    print("Lazy Model hasOne \(associatedFieldName) \(targetName)")
                     modelDictionary.updateValue(value as? String, forKeyPath: field.name)
                 case .hasMany:
-                    print("Found belongs to")
+                    print("hasMany")
                 }
             }
 
@@ -124,8 +123,6 @@ extension Statement: StatementModelConvertible {
                     print("Lazy List init \(lazyList) \(listKeyPath)")
                     modelDictionary.updateValue(lazyList, forKeyPath: listKeyPath)
                 }
-
-
             }
 
         }
@@ -150,11 +147,10 @@ internal extension List {
     }
 }
 
-internal extension Lazy {
-    static func lazyInit(id: String, modelName: String) -> [String: Any?] {
+internal extension LazyModel {
+    static func lazyInit(id: String) -> [String: Any?] {
         return [
-            "id": id,
-            "modelName": modelName
+            "id": id
         ]
     }
 }

@@ -109,7 +109,7 @@ extension Model {
                 } else if let value = value as? [String: JSONValue],
                    case .string(let primaryKeyValue) = value[modelSchema.primaryKey.name] {
                     return primaryKeyValue
-                } else if let value = value as? LazyMarker {
+                } else if let value = value as? LazyModelMarker {
                     return value.id
                 }
             }

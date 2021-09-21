@@ -8,30 +8,105 @@
 import Foundation
 import Combine
 
-public protocol LazyMarker {
+public protocol LazyModelMarker {
     var id: String { get }
 }
-public class Lazy<ModelType: Model>: Codable, LazyMarker {
 
-    public let instance: ModelType?
+public protocol LazyModelProvider {
+    associatedtype Instance: Model
+    func fetch() -> Result<Instance, DataStoreError>
+    func fetch(completion: @escaping (Result<Instance, DataStoreError>) -> Void)
+}
+
+public class LazyModel<ModelType: Model>: Codable, LazyModelMarker {
+
     public let id: String
+    var loadedState: LoadedState
 
+    enum LoadedState {
+        case notLoaded
+        case loaded(ModelType)
+    }
+    
     init(id: String) {
         self.id = id
-        self.instance = nil
+        self.loadedState = .notLoaded
     }
-    
     
     init(_ instance: ModelType) {
-        self.instance = instance
         self.id = instance.id
+        self.loadedState = .notLoaded
     }
 
-    func load() {
-        // use the id and Model, and query for the data
-        // Amplify.DataStore.query(Model, where: id) {
+    public var instance: ModelType? {
+        get {
+            switch loadedState {
+            case .loaded(let instance):
+                return instance
+            case .notLoaded:
+                let result = load()
+                switch result {
+                case .success(let instance):
+                    loadedState = .loaded(instance)
+                    return instance
+                case .failure(let error):
+                    Amplify.log.error(error: error)
+                    return nil
+                }
+            }
+        }
         
-        // store self.instance = result
+        set {
+            switch loadedState {
+            case .loaded:
+                Amplify.log.error("Error")
+                return
+            case .notLoaded:
+                loadedState = .loaded(newValue!)
+            }
+        }
+    }
+    
+    public func load() -> Result<ModelType, DataStoreError> {
+        let semaphore = DispatchSemaphore(value: 0)
+        var loadResult: Result<ModelType, DataStoreError> =
+            .failure(.unknown("Failed to Query DataStore.", "See underlying DataStoreError for more details.", nil))
+        
+        load { result in
+            defer {
+                semaphore.signal()
+            }
+            switch result {
+            case .success(let instance):
+                loadResult = .success(instance)
+            case .failure(let error):
+                Amplify.DataStore.log.error(error: error)
+                assert(false, error.localizedDescription)
+                loadResult = .failure(error)
+            }
+        }
+        semaphore.wait()
+        return loadResult
+    }
+    
+    public func load(completion: (Result<ModelType, DataStoreError>) -> Void) {
+        switch loadedState {
+        case .loaded(let instance):
+            completion(.success(instance))
+        case .notLoaded:
+            Amplify.DataStore.query(ModelType.self, byId: id) {
+                switch $0 {
+                case .success(let instance):
+                    self.instance = instance
+                    completion(.success(instance!))
+                case .failure(let error):
+                    Amplify.DataStore.log.error(error: error)
+                    completion(.failure(DataStoreError.unknown("Failed to Query DataStore.",
+                                                               "See underlying DataStoreError for more details.",
+                                                               error)))
+                }
+            }
+        }
     }
     
     // Decoder gets called when the object is created
@@ -39,12 +114,29 @@ public class Lazy<ModelType: Model>: Codable, LazyMarker {
         // "post": //decoder information
         let json = try JSONValue(from: decoder)
         // json = { id: "", modelName: "Post4" }
-        
         print("Decoding \(json)")
+        switch json {
+        case .object(let associationData):
+            if case let .string(id) = associationData["id"] {
+                self.init(id: id)
+                return
+            }
+        default:
+            break
+        }
         
-        // TODO: extract information from json and store
-        
-        self.init(id: "id")
+        throw DataStoreError.unknown("Failed to decode.",
+                                     "See underlying DataStoreError for more details.", nil)
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        switch loadedState {
+        case .notLoaded:
+            throw DataStoreError.unknown("Failed to encode.",
+                                         "See underlying DataStoreError for more details.", nil)
+        case .loaded(let instance):
+            try instance.encode(to: encoder)
+        }
     }
 }
 
