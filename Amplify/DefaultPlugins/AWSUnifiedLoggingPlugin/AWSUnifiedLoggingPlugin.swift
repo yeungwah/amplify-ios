@@ -31,7 +31,6 @@ final public class AWSUnifiedLoggingPlugin: LoggingCategoryPlugin {
     /// Initializes the logging system with a default log, and immediately registers a default logger
     public init() {
         self.subsystem = Bundle.main.bundleIdentifier ?? "com.amazonaws.amplify.AWSUnifiedLoggingPlugin"
-
         let defaultOSLog = OSLog(subsystem: subsystem, category: AWSUnifiedLoggingPlugin.defaultCategory)
         let wrapper = OSLogWrapper(osLog: defaultOSLog,
                                    getLogLevel: { Amplify.Logging.logLevel })

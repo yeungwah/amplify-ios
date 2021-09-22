@@ -46,14 +46,14 @@ extension Comment4a {
   //  MARK: - ModelSchema
 
   public static let schema = defineSchema { model in
-    let comment4 = Comment4.keys
+    let comment4a = Comment4a.keys
 
-    model.pluralName = "Comment4s"
+    model.pluralName = "Comment4as"
 
     model.fields(
       .id(),
-      .field(comment4.content, is: .required, ofType: .string),
-      .belongsTo(comment4.post, is: .optional, ofType: Post4.self, targetName: "postID")
+      .field(comment4a.content, is: .required, ofType: .string),
+      .belongsTo(comment4a.post, is: .optional, ofType: Post4a.self, targetName: "postID")
     )
     }
 }

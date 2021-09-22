@@ -12,11 +12,39 @@ import XCTest
 @testable import AmplifyTestCommon
 @testable import AWSDataStoreCategoryPlugin
 
+
 class DataStoreListProviderFunctionalTests: BaseDataStoreTests {
 
+    func test00() {
+
+    }
+    func test0() {
+        sleep(10)
+        let clearDone = expectation(description: "clearDone")
+        Amplify.DataStore.clear { result in
+            switch result {
+            case .success:
+                clearDone.fulfill()
+            case .failure(let error):
+                print(error)
+            }
+        }
+        wait(for: [clearDone], timeout: 3)
+    }
+
+    func test3() {
+
+    }
+
     func test1() {
+        //Amplify.DataStore.clear()
         let savePostSuccess = expectation(description: "save post successful")
-        let post = Post4(title: "title")
+        let post = Post4a(title: "title")
+
+//        if let list = post.comments {
+//            list.elements.append(comment)
+//        }
+
         storageAdapter.save(post) {
             switch $0 {
             case .success(let post):
@@ -28,8 +56,7 @@ class DataStoreListProviderFunctionalTests: BaseDataStoreTests {
         }
         wait(for: [savePostSuccess], timeout: 1)
         let saveCommentSuccess = expectation(description: "save comment successful")
-
-        let comment = Comment4a(content: "Comment 1", post: .init(post))
+        let comment = Comment4a(content: "Comment 1", post: post)
         storageAdapter.save(comment) {
             switch $0 {
             case .success(let comment):
@@ -40,14 +67,24 @@ class DataStoreListProviderFunctionalTests: BaseDataStoreTests {
                     return
                 }
 
-                guard case .notLoaded = postInternal.loadedState else {
-                    XCTFail("Should not be in loaded state")
-                    return
-                }
-
-                print("Lazy loading post... ")
-                print("Post instance: \(postInternal.instance)")
-                print("Loaded state: \(postInternal.loadedState)")
+//                guard case .notLoaded = postInternal.loadedState else {
+//                    XCTFail("Should not be in loaded state")
+//                    return
+//                }
+//
+//                print("Lazy loading post... ")
+//                print("Post instance: \(postInternal.instance)")
+//
+//                print("Post fetch..")
+//                postInternal.fetch { result in
+//                    switch result {
+//                    case .success(let post):
+//                        print("Fetched post \(post)")
+//                    case .failure(let error):
+//                        print("\(error)")
+//                    }
+//                }
+//                print("Loaded state: \(postInternal.loadedState)")
 
                 saveCommentSuccess.fulfill()
             case .failure(let error):

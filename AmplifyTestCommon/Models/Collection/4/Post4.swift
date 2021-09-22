@@ -22,3 +22,17 @@ public struct Post4: Model {
       self.comments = comments
   }
 }
+
+public struct Post4a: Model {
+  public let id: String
+  public var title: String
+  public var comments: List<Comment4a>?
+
+  public init(id: String = UUID().uuidString,
+      title: String,
+      comments: List<Comment4a>? = []) {
+      self.id = id
+      self.title = title
+      self.comments = comments
+  }
+}

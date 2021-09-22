@@ -20,20 +20,20 @@ public protocol LazyModelProvider {
 
 public class LazyModel<ModelType: Model>: Codable, LazyModelMarker, LazyModelProvider {
 
-    public let id: String
+    public var id: String
     var loadedState: LoadedState
 
     enum LoadedState {
         case notLoaded
         case loaded(ModelType)
     }
-    
-    init(id: String) {
+
+    public init(id: String) {
         self.id = id
         self.loadedState = .notLoaded
     }
-    
-    init(_ instance: ModelType) {
+
+    public init(_ instance: ModelType) {
         self.id = instance.id
         self.loadedState = .notLoaded
     }
@@ -55,23 +55,24 @@ public class LazyModel<ModelType: Model>: Codable, LazyModelMarker, LazyModelPro
                 }
             }
         }
-        
+
         set {
             switch loadedState {
             case .loaded:
-                Amplify.log.error("Error")
+                loadedState = .loaded(newValue!)
                 return
             case .notLoaded:
                 loadedState = .loaded(newValue!)
+                id = newValue!.id
             }
         }
     }
-    
+
     public func fetch() -> Result<ModelType, DataStoreError> {
         let semaphore = DispatchSemaphore(value: 0)
         var loadResult: Result<ModelType, DataStoreError> =
             .failure(.unknown("Failed to Query DataStore.", "See underlying DataStoreError for more details.", nil))
-        
+
         fetch { result in
             defer {
                 semaphore.signal()
@@ -88,7 +89,7 @@ public class LazyModel<ModelType: Model>: Codable, LazyModelMarker, LazyModelPro
         semaphore.wait()
         return loadResult
     }
-    
+
     public func fetch(completion: (Result<ModelType, DataStoreError>) -> Void) {
         switch loadedState {
         case .loaded(let instance):
@@ -108,7 +109,7 @@ public class LazyModel<ModelType: Model>: Codable, LazyModelMarker, LazyModelPro
             }
         }
     }
-    
+
     // Decoder gets called when the object is created
     required convenience public init(from decoder: Decoder) throws {
         // "post": //decoder information
@@ -124,11 +125,11 @@ public class LazyModel<ModelType: Model>: Codable, LazyModelMarker, LazyModelPro
         default:
             break
         }
-        
+
         throw DataStoreError.unknown("Failed to decode.",
                                      "See underlying DataStoreError for more details.", nil)
     }
-    
+
     public func encode(to encoder: Encoder) throws {
         switch loadedState {
         case .notLoaded:

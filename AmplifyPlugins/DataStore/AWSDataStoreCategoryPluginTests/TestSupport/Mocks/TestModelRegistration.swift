@@ -18,6 +18,7 @@ struct TestModelRegistration: AmplifyModelRegistration {
 
         // Post4 and Comment4
         registry.register(modelType: Post4.self)
+        registry.register(modelType: Post4a.self)
         registry.register(modelType: Comment4.self)
         registry.register(modelType: Comment4a.self)
 

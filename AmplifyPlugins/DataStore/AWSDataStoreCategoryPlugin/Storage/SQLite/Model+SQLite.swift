@@ -71,6 +71,7 @@ extension Model {
             if let jsonModel = self as? JSONValueHolder {
                 existingFieldOptionalValue = jsonModel.jsonValue(for: field.name, modelSchema: modelSchema)
             } else {
+
                 existingFieldOptionalValue = self[field.name]
             }
 
@@ -103,6 +104,7 @@ extension Model {
 
                 // Check if it is a Model or json object or a Lazy Model
                 if let value = value as? Model {
+                    print("value as Model \(value)")
                     let associatedModel: Model.Type = type(of: value)
                     return value[associatedModel.schema.primaryKey.name] as? String
 
@@ -110,6 +112,7 @@ extension Model {
                    case .string(let primaryKeyValue) = value[modelSchema.primaryKey.name] {
                     return primaryKeyValue
                 } else if let value = value as? LazyModelMarker {
+                    print("value as LazyModelMarker \(value.id)")
                     return value.id
                 }
             }

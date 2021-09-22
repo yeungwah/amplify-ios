@@ -32,3 +32,27 @@ extension Post4 {
     )
     }
 }
+
+extension Post4a {
+  // MARK: - CodingKeys
+   public enum CodingKeys: String, ModelKey {
+    case id
+    case title
+    case comments
+  }
+
+  public static let keys = CodingKeys.self
+  //  MARK: - ModelSchema
+
+  public static let schema = defineSchema { model in
+    let post4a = Post4a.keys
+
+    model.pluralName = "Post4as"
+
+    model.fields(
+      .id(),
+      .field(post4a.title, is: .required, ofType: .string),
+      .hasMany(post4a.comments, is: .optional, ofType: Comment4a.self, associatedWith: Comment4a.keys.post)
+    )
+    }
+}
