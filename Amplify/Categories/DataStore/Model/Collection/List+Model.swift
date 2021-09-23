@@ -18,52 +18,26 @@ public protocol LazyModelProvider {
     func fetch(completion: @escaping (Result<Instance, CoreError>) -> Void)
 }
 
-public class LazyModel<ModelType: Model>: Codable, LazyModelMarker, LazyModelProvider {
+public class DataStoreLazyModelProvider<Instance : Model> : LazyModelProvider {
+    
+    enum LoadedState {
+        case notLoaded(id: Model.Identifier)
+        case loaded(Instance)
+    }
 
-    public let id: Model.Identifier
     var loadedState: LoadedState
 
-    enum LoadedState {
-        case notLoaded
-        case loaded(ModelType)
-    }
-    
-    public init(id: String) {
-        self.id = id
-        self.loadedState = .notLoaded
-    }
-    
-    public init(_ instance: ModelType) {
-        self.id = instance.id
-        self.loadedState = .loaded(instance)
+    init(_ id: Model.Identifier) {
+        self.loadedState = .notLoaded(id : id)
     }
 
-    public var instance: ModelType? {
-        get {
-            switch loadedState {
-            case .loaded(let instance):
-                return instance
-            case .notLoaded:
-                let result = fetch()
-                switch result {
-                case .success(let instance):
-                    loadedState = .loaded(instance)
-                    return instance
-                case .failure(let error):
-                    Amplify.log.error(error: error)
-                    return nil
-                }
-            }
-        }
-        
-        set {
-            loadedState = .loaded(newValue!)
-        }
+    init(_ instance : Instance) {
+        self.loadedState = .loaded(instance)
     }
     
-    public func fetch() -> Result<ModelType, CoreError> {
+    public func fetch() -> Result<Instance, CoreError> {
         let semaphore = DispatchSemaphore(value: 0)
-        var loadResult: Result<ModelType, CoreError> =
+        var loadResult: Result<Instance, CoreError> =
             .failure(CoreError.loadOperation("Failed to Query DataStore.",
                                              "See underlying DataStoreError for more details.",
                                              nil))
@@ -85,15 +59,14 @@ public class LazyModel<ModelType: Model>: Codable, LazyModelMarker, LazyModelPro
         return loadResult
     }
     
-    public func fetch(completion: (Result<ModelType, CoreError>) -> Void) {
+    public func fetch(completion: (Result<Instance, CoreError>) -> Void) {
         switch loadedState {
         case .loaded(let instance):
             completion(.success(instance))
-        case .notLoaded:
-            Amplify.DataStore.query(ModelType.self, byId: id) {
+        case .notLoaded(let id):
+            Amplify.DataStore.query(Instance.self, byId: id) {
                 switch $0 {
                 case .success(let instance):
-                    self.instance = instance
                     completion(.success(instance!))
                 case .failure(let error):
                     Amplify.DataStore.log.error(error: error)
@@ -103,6 +76,65 @@ public class LazyModel<ModelType: Model>: Codable, LazyModelMarker, LazyModelPro
                                                          nil)))
                 }
             }
+        }
+    }
+}
+
+public class LazyModel<ModelType: Model>: Codable, LazyModelMarker {
+    
+    public let id: Model.Identifier
+    var loadedState: LoadedState
+    let dataProvider: DataStoreLazyModelProvider<ModelType>
+
+    enum LoadedState {
+        case notLoaded
+        case loaded(ModelType)
+    }
+    
+    public init(id: String) {
+        self.id = id
+        self.dataProvider = DataStoreLazyModelProvider<ModelType>(id)
+        self.loadedState = .notLoaded
+    }
+    
+    public init(_ instance: ModelType) {
+        self.id = instance.id
+        self.dataProvider = DataStoreLazyModelProvider<ModelType>(instance)
+        self.loadedState = .loaded(instance)
+    }
+
+    public init(_ provider: DataStoreLazyModelProvider<ModelType>) {
+        self.dataProvider = provider
+        switch provider.loadedState {
+        case .loaded(let instance) :
+            self.id = instance.id
+            self.loadedState = .loaded(instance)
+        case .notLoaded(let id):
+            self.id = id
+            self.loadedState = .notLoaded
+        }
+    }
+    
+    public var instance: ModelType? {
+        get {
+            switch loadedState {
+            case .loaded(let instance):
+                return instance
+            case .notLoaded:
+                let result = dataProvider.fetch()
+                switch result {
+                case .success(let instance):
+                    loadedState = .loaded(instance)
+                    return instance
+                case .failure(let error):
+                    Amplify.log.error(error: error)
+                    return nil
+                }
+            }
+        }
+        
+        set {
+            loadedState = .loaded(newValue!)
         }
     }
     
