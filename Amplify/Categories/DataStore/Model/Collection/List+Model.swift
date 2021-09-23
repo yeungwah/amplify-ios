@@ -28,12 +28,12 @@ public class LazyModel<ModelType: Model>: Codable, LazyModelMarker, LazyModelPro
         case loaded(ModelType)
     }
     
-    init(id: String) {
+    public init(id: String) {
         self.id = id
         self.loadedState = .notLoaded
     }
     
-    init(_ instance: ModelType) {
+    public init(_ instance: ModelType) {
         self.id = instance.id
         self.loadedState = .loaded(instance)
     }

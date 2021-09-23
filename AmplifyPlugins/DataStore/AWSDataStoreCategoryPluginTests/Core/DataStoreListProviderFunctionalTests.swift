@@ -40,15 +40,8 @@ class DataStoreListProviderFunctionalTests: BaseDataStoreTests {
                     return
                 }
 
-                guard case .notLoaded = postInternal.loadedState else {
-                    XCTFail("Should not be in loaded state")
-                    return
-                }
-
-                print("Lazy loading post... ")
-                print("Post instance: \(postInternal.instance)")
-                print("Loaded state: \(postInternal.loadedState)")
-
+                XCTAssertEqual(postInternal.id, post.id)
+                XCTAssertEqual(postInternal.title, post.title)
                 saveCommentSuccess.fulfill()
             case .failure(let error):
                 XCTFail(error.errorDescription)

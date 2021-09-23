@@ -98,7 +98,7 @@ extension Statement: StatementModelConvertible {
                         // what is the field's type name?
                         if case .model = field.type {
                             let lazyModel = LazyModel<AnyModel>.lazyInit(id: id)
-                            modelDictionary.updateValue(lazyModel, forKeyPath: field.name)
+                            modelDictionary.updateValue(lazyModel, forKeyPath: "_" + field.name)
                         }
                     }
                 case .hasOne(let associatedFieldName, let targetName):
