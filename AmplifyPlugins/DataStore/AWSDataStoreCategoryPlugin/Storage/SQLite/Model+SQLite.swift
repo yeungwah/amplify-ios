@@ -101,7 +101,7 @@ extension Model {
                case let .model(modelName) = field.type,
                let modelSchema = ModelRegistry.modelSchema(from: modelName) {
 
-                // Check if it is a Model or json object.
+                // Check if it is a Model or json object or a Lazy Model
                 if let value = value as? Model {
                     let associatedModel: Model.Type = type(of: value)
                     return value[associatedModel.schema.primaryKey.name] as? String
@@ -109,6 +109,8 @@ extension Model {
                 } else if let value = value as? [String: JSONValue],
                    case .string(let primaryKeyValue) = value[modelSchema.primaryKey.name] {
                     return primaryKeyValue
+                } else if let value = value as? LazyModelMarker {
+                    return value.id
                 }
             }
 

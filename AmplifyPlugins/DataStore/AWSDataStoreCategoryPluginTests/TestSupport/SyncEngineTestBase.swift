@@ -43,9 +43,7 @@ class SyncEngineTestBase: XCTestCase {
 
     override func setUpWithError() throws {
         continueAfterFailure = false
-
         Amplify.reset()
-
         let apiConfig = APICategoryConfiguration(plugins: [
             "MockAPICategoryPlugin": true
         ])

@@ -22,26 +22,51 @@ struct SelectStatementMetadata {
     static func metadata(from modelSchema: ModelSchema,
                          predicate: QueryPredicate? = nil,
                          sort: [QuerySortDescriptor]? = nil,
-                         paginationInput: QueryPaginationInput? = nil) -> SelectStatementMetadata {
+                         paginationInput: QueryPaginationInput? = nil,
+                         lazyLoad: Bool = true) -> SelectStatementMetadata {
         let rootNamespace = "root"
         let fields = modelSchema.columns
         let tableName = modelSchema.name
         var columnMapping: ColumnMapping = [:]
         var columns = fields.map { field -> String in
-            columnMapping.updateValue((modelSchema, field), forKey: field.name)
+            if let association = field.association {
+                switch association {
+                case .belongsTo(let associatedFieldName, let targetName):
+                    if let targetName = targetName {
+                        columnMapping.updateValue((modelSchema, field), forKey: targetName)
+                    } else {
+                        columnMapping.updateValue((modelSchema, field), forKey: field.name)
+                    }
+
+                case .hasOne(let associatedFieldname, let targetName):
+                    if let targetName = targetName {
+                        columnMapping.updateValue((modelSchema, field), forKey: targetName)
+                    } else {
+                        columnMapping.updateValue((modelSchema, field), forKey: field.name)
+                    }
+
+                case .hasMany:
+                    columnMapping.updateValue((modelSchema, field), forKey: field.name)
+                }
+            } else {
+                columnMapping.updateValue((modelSchema, field), forKey: field.name)
+            }
+
             return field.columnName(forNamespace: rootNamespace) + " as " + field.columnAlias()
         }
 
         // eager load many-to-one/one-to-one relationships
         let joinStatements = joins(from: modelSchema)
-        columns += joinStatements.columns
-        columnMapping.merge(joinStatements.columnMapping) { _, new in new }
+        if !lazyLoad {
+            columns += joinStatements.columns
+            columnMapping.merge(joinStatements.columnMapping) { _, new in new }
+        }
 
         var sql = """
         select
           \(joinedAsSelectedColumns(columns))
         from \(tableName) as "\(rootNamespace)"
-        \(joinStatements.statements.joined(separator: "\n"))
+        \(!lazyLoad ? joinStatements.statements.joined(separator: "\n") : "")
         """.trimmingCharacters(in: .whitespacesAndNewlines)
 
         var bindings: [Binding?] = []

@@ -172,6 +172,7 @@
 		21AD4257249BFFE00016FE95 /* DeprecatedTodo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21AD4255249BFFDF0016FE95 /* DeprecatedTodo.swift */; };
 		21AD425A249C0D910016FE95 /* AnyModelTester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 213481D8242AFA62001966DE /* AnyModelTester.swift */; };
 		21AD425B249C0DBE0016FE95 /* AnyModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8EE772238621320097E4F1 /* AnyModelTests.swift */; };
+		21B82EFD271DF46F000EC306 /* LazyModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21B82EFC271DF46F000EC306 /* LazyModel.swift */; };
 		21C395B3245729EC00597EA2 /* AppSyncErrorType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C395B2245729EC00597EA2 /* AppSyncErrorType.swift */; };
 		21D79FDA237617C60057D00D /* SubscriptionEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21D79FD9237617C60057D00D /* SubscriptionEvent.swift */; };
 		21D79FE32377F4120057D00D /* SubscriptionConnectionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21D79FE22377F4120057D00D /* SubscriptionConnectionState.swift */; };
@@ -1010,6 +1011,7 @@
 		21AAE23E26DFE94B007BA909 /* ModelSyncMetadata+Schema.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ModelSyncMetadata+Schema.swift"; sourceTree = "<group>"; };
 		21AAE23F26DFE94B007BA909 /* ModelSyncMetadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelSyncMetadata.swift; sourceTree = "<group>"; };
 		21AD4255249BFFDF0016FE95 /* DeprecatedTodo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DeprecatedTodo.swift; path = Deprecated/DeprecatedTodo.swift; sourceTree = "<group>"; };
+		21B82EFC271DF46F000EC306 /* LazyModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LazyModel.swift; sourceTree = "<group>"; };
 		21C395B2245729EC00597EA2 /* AppSyncErrorType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSyncErrorType.swift; sourceTree = "<group>"; };
 		21D79FD9237617C60057D00D /* SubscriptionEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionEvent.swift; sourceTree = "<group>"; };
 		21D79FE22377F4120057D00D /* SubscriptionConnectionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionConnectionState.swift; sourceTree = "<group>"; };
@@ -2224,6 +2226,14 @@
 			path = AnyModel;
 			sourceTree = "<group>";
 		};
+		21B82EFB271DF457000EC306 /* Lazy */ = {
+			isa = PBXGroup;
+			children = (
+				21B82EFC271DF46F000EC306 /* LazyModel.swift */,
+			);
+			path = Lazy;
+			sourceTree = "<group>";
+		};
 		21C395B4245729F100597EA2 /* API */ = {
 			isa = PBXGroup;
 			children = (
@@ -2945,6 +2955,7 @@
 		B92E03A62367CE7A006CEB8D /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				21B82EFB271DF457000EC306 /* Lazy */,
 				B4944D1F251C06D300BF0BFE /* JSONHelper */,
 				B92E03A72367CE7A006CEB8D /* Model.swift */,
 				FA8EE778238627040097E4F1 /* Model+ModelName.swift */,
@@ -5247,6 +5258,7 @@
 				FAC235A3227A5ED000424678 /* HubChannel.swift in Sources */,
 				FAA2E8CE23A02A8100E420EA /* PredictionsCategory+Resettable.swift in Sources */,
 				FAC23516227A053D00424678 /* StorageCategoryBehavior.swift in Sources */,
+				21B82EFD271DF46F000EC306 /* LazyModel.swift in Sources */,
 				FA4E730E232829F1003B8EEB /* Resettable.swift in Sources */,
 				FAC23518227A053D00424678 /* StorageCategoryPlugin.swift in Sources */,
 				B42B3D3B246AE178007211E0 /* AuthInvalidateCredentialBehavior.swift in Sources */,

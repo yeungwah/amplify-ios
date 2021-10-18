@@ -14,6 +14,43 @@ import XCTest
 
 class DataStoreListProviderFunctionalTests: BaseDataStoreTests {
 
+    func test1() {
+        let savePostSuccess = expectation(description: "save post successful")
+        let post = Post4(title: "title")
+        storageAdapter.save(post) {
+            switch $0 {
+            case .success(let post):
+                print(post)
+                savePostSuccess.fulfill()
+            case .failure(let error):
+                XCTFail(error.errorDescription)
+            }
+        }
+        wait(for: [savePostSuccess], timeout: 1)
+        let saveCommentSuccess = expectation(description: "save comment successful")
+
+        let comment = Comment4a(content: "Comment 1", post: .init(post))
+        storageAdapter.save(comment) {
+            switch $0 {
+            case .success(let comment):
+                print(comment)
+
+                guard let postInternal = comment.post else {
+                    XCTFail("Post is nil")
+                    return
+                }
+
+                XCTAssertEqual(postInternal.id, post.id)
+                XCTAssertEqual(postInternal.title, post.title)
+                saveCommentSuccess.fulfill()
+            case .failure(let error):
+                XCTFail(error.errorDescription)
+            }
+        }
+        wait(for: [saveCommentSuccess], timeout: 1)
+
+    }
+
     func testDataStoreListProviderWithAssociationDataShouldLoad() {
         let postId = preparePost4DataForTest()
         let provider = DataStoreListProvider<Comment4>(associatedId: postId, associatedField: "post")
