@@ -136,4 +136,64 @@ class DataStoreCollection4Tests: BaseDataStoreTests {
         }
         wait(for: [queryLazyCommentsFromPostSuccess], timeout: 100)
     }
+
+    func testBelongsTo() {
+        let savePostSuccess = expectation(description: "save post successful")
+        let post = Post4(title: "title")
+        storageAdapter.save(post) {
+            switch $0 {
+            case .success(let post):
+                print(post)
+                savePostSuccess.fulfill()
+            case .failure(let error):
+                XCTFail(error.errorDescription)
+            }
+        }
+        wait(for: [savePostSuccess], timeout: 1)
+
+        let saveCommentSuccess = expectation(description: "save comment successful")
+        let comment = Comment4(content: "Comment 1", post: post)
+        storageAdapter.save(comment) {
+            switch $0 {
+            case .success:
+                saveCommentSuccess.fulfill()
+            case .failure(let error):
+                XCTFail(error.errorDescription)
+            }
+        }
+        wait(for: [saveCommentSuccess], timeout: 1)
+
+        let queryCommentSuccess = expectation(description: "query comment successful")
+        let predicate: QueryPredicate = field("id") == comment.id
+        storageAdapter.query(modelSchema: Comment4.schema, predicate: predicate) { result in
+            switch result {
+            case .success(let results):
+                guard let comment = results.first as? Comment4 else {
+                    XCTFail("error querying comment")
+                    return
+                }
+
+                print(comment)
+
+                guard let postInternal = comment.post else {
+                    XCTFail("Post is nil")
+                    return
+                }
+
+                guard case .notLoaded = postInternal.loadedState else {
+                    XCTFail("Should not be in loaded state")
+                    return
+                }
+
+                print("Lazy loading post... ")
+                print("Post instance: \(postInternal.instance)")
+                print("Loaded state: \(postInternal.loadedState)")
+                queryCommentSuccess.fulfill()
+            case .failure(let error):
+                XCTFail(error.errorDescription)
+            }
+        }
+
+        wait(for: [queryCommentSuccess], timeout: 1)
+    }
 }

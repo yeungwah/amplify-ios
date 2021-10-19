@@ -108,4 +108,64 @@ class DataStoreCollection2Tests: BaseDataStoreTests {
         }
         wait(for: [queryProjectSuccess], timeout: 10)
     }
+
+    func testHasOne() {
+        let saveTeamSuccess = expectation(description: "save team successful")
+        let team = Team2(name: "Team")
+        storageAdapter.save(team) {
+            switch $0 {
+            case .success(let team):
+                print(team)
+                saveTeamSuccess.fulfill()
+            case .failure(let error):
+                XCTFail(error.errorDescription)
+            }
+        }
+        wait(for: [saveTeamSuccess], timeout: 1)
+
+        let saveProjectSuccess = expectation(description: "save project successful")
+        let project = Project2(name: "Project", team: team)
+        storageAdapter.save(project) {
+            switch $0 {
+            case .success:
+                saveProjectSuccess.fulfill()
+            case .failure(let error):
+                XCTFail(error.errorDescription)
+            }
+        }
+        wait(for: [saveProjectSuccess], timeout: 1)
+
+        let queryProjectSuccess = expectation(description: "query project successful")
+        let predicate: QueryPredicate = field("id") == project.id
+        storageAdapter.query(modelSchema: Project2.schema, predicate: predicate) { result in
+            switch result {
+            case .success(let results):
+                guard let project = results.first as? Project2 else {
+                    XCTFail("error querying project")
+                    return
+                }
+
+                print(project)
+
+                guard let teamInternal = project.team else {
+                    XCTFail("team is nil")
+                    return
+                }
+
+                guard case .notLoaded = teamInternal.loadedState else {
+                    XCTFail("Should not be in loaded state")
+                    return
+                }
+
+                print("Lazy loading team... ")
+                print("Post instance: \(teamInternal.instance)")
+                print("Loaded state: \(teamInternal.loadedState)")
+                queryProjectSuccess.fulfill()
+            case .failure(let error):
+                XCTFail(error.errorDescription)
+            }
+        }
+
+        wait(for: [queryProjectSuccess], timeout: 1)
+    }
 }
