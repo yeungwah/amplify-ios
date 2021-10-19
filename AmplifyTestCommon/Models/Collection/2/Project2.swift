@@ -25,3 +25,22 @@ public struct Project2: Model {
       self.team = team
   }
 }
+
+public struct Project2a: Model {
+  public let id: String
+  public var name: String?
+  public var teamID: String
+  public var team: LazyModel<Team2>?
+
+  public init(id: String = UUID().uuidString,
+      name: String? = nil,
+      teamID: String,
+      team: Team2? = nil) {
+      self.id = id
+      self.name = name
+      self.teamID = teamID
+      if let team = team {
+          self.team = .init(team)
+      }
+  }
+}

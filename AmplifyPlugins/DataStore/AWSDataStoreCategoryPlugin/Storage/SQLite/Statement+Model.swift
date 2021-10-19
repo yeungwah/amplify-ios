@@ -103,7 +103,13 @@ extension Statement: StatementModelConvertible {
                     }
                 case .hasOne(let associatedFieldName, let targetName):
                     print("Lazy Model hasOne \(associatedFieldName) \(targetName)")
-                    modelDictionary.updateValue(value as? String, forKeyPath: field.name)
+                    if let id = value as? String {
+                        // what is the field's type name?
+                        if case .model = field.type {
+                            let lazyModel = LazyModel<AnyModel>.lazyInit(id: id)
+                            modelDictionary.updateValue(lazyModel, forKeyPath: field.name)
+                        }
+                    }
                 case .hasMany:
                     print("hasMany")
                 }

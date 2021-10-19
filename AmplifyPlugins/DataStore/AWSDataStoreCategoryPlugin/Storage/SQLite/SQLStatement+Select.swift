@@ -31,14 +31,14 @@ struct SelectStatementMetadata {
         var columns = fields.map { field -> String in
             if let association = field.association {
                 switch association {
-                case .belongsTo(let associatedFieldName, let targetName):
+                case .belongsTo(_, let targetName):
                     if let targetName = targetName {
                         columnMapping.updateValue((modelSchema, field), forKey: targetName)
                     } else {
                         columnMapping.updateValue((modelSchema, field), forKey: field.name)
                     }
 
-                case .hasOne(let associatedFieldname, let targetName):
+                case .hasOne(_, let targetName):
                     if let targetName = targetName {
                         columnMapping.updateValue((modelSchema, field), forKey: targetName)
                     } else {

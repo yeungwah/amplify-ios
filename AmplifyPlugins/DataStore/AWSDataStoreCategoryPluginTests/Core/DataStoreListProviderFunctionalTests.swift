@@ -14,7 +14,7 @@ import XCTest
 
 class DataStoreListProviderFunctionalTests: BaseDataStoreTests {
 
-    func test1() {
+    func testBelongsTo() {
         let savePostSuccess = expectation(description: "save post successful")
         let post = Post4(title: "title")
         storageAdapter.save(post) {
@@ -72,6 +72,66 @@ class DataStoreListProviderFunctionalTests: BaseDataStoreTests {
         }
 
         wait(for: [queryCommentSuccess], timeout: 1)
+    }
+
+    func testHasOne() {
+        let saveTeamSuccess = expectation(description: "save team successful")
+        let team = Team2(name: "Team")
+        storageAdapter.save(team) {
+            switch $0 {
+            case .success(let team):
+                print(team)
+                saveTeamSuccess.fulfill()
+            case .failure(let error):
+                XCTFail(error.errorDescription)
+            }
+        }
+        wait(for: [saveTeamSuccess], timeout: 1)
+
+        let saveProjectSuccess = expectation(description: "save project successful")
+        let project = Project2a(name: "Project", teamID: team.id, team: team)
+        storageAdapter.save(project) {
+            switch $0 {
+            case .success:
+                saveProjectSuccess.fulfill()
+            case .failure(let error):
+                XCTFail(error.errorDescription)
+            }
+        }
+        wait(for: [saveProjectSuccess], timeout: 1)
+
+        let queryProjectSuccess = expectation(description: "query project successful")
+        let predicate: QueryPredicate = field("id") == project.id
+        storageAdapter.query(modelSchema: Project2a.schema, predicate: predicate) { result in
+            switch result {
+            case .success(let results):
+                guard let comment = results.first as? Project2a else {
+                    XCTFail("error querying project")
+                    return
+                }
+
+                print(comment)
+
+                guard let teamInternal = project.team else {
+                    XCTFail("team is nil")
+                    return
+                }
+
+                guard case .notLoaded = teamInternal.loadedState else {
+                    XCTFail("Should not be in loaded state")
+                    return
+                }
+
+                print("Lazy loading team... ")
+                print("Post instance: \(teamInternal.instance)")
+                print("Loaded state: \(teamInternal.loadedState)")
+                queryProjectSuccess.fulfill()
+            case .failure(let error):
+                XCTFail(error.errorDescription)
+            }
+        }
+
+        wait(for: [queryProjectSuccess], timeout: 1)
     }
 
     func testDataStoreListProviderWithAssociationDataShouldLoad() {

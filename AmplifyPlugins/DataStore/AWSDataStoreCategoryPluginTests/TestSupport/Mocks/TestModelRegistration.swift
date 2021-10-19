@@ -21,6 +21,10 @@ struct TestModelRegistration: AmplifyModelRegistration {
         registry.register(modelType: Comment4.self)
         registry.register(modelType: Comment4a.self)
 
+        registry.register(modelType: Team2.self)
+        registry.register(modelType: Project2.self)
+        registry.register(modelType: Project2a.self)
+
         // Mock Models
         registry.register(modelType: MockSynced.self)
         registry.register(modelType: MockUnsynced.self)
