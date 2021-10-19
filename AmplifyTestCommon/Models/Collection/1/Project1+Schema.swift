@@ -28,7 +28,7 @@ extension Project1 {
     model.fields(
       .id(),
       .field(project1.name, is: .optional, ofType: .string),
-      .belongsTo(project1.team, is: .optional, ofType: Team1.self, targetName: "project1TeamId")
+      .hasOne(project1.team, is: .optional, ofType: Team1.self, associatedWith: Team1.keys.id, targetName: "project1TeamId")
     )
     }
 }
