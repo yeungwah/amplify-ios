@@ -16,9 +16,31 @@ struct TestModelRegistration: AmplifyModelRegistration {
         registry.register(modelType: Post.self)
         registry.register(modelType: Comment.self)
 
-        // Post4 and Comment4
+        // Collection Scenario 1
+        registry.register(modelType: Project1.self)
+        registry.register(modelType: Team1.self)
+
+        // Collection Scenario 2
+        registry.register(modelType: Project2.self)
+        registry.register(modelType: Team2.self)
+
+        // Collection Scenario 3 -
+        registry.register(modelType: Post3.self)
+        registry.register(modelType: Comment3.self)
+
+        // Collection Scenario 4
         registry.register(modelType: Post4.self)
         registry.register(modelType: Comment4.self)
+
+        // Collection Scenario 5 -
+        registry.register(modelType: Post5.self)
+        registry.register(modelType: PostEditor5.self)
+        registry.register(modelType: User5.self)
+
+        // Collection Scenario 6 -
+        registry.register(modelType: Blog6.self)
+        registry.register(modelType: Post6.self)
+        registry.register(modelType: Comment6.self)
 
         // Mock Models
         registry.register(modelType: MockSynced.self)

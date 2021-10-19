@@ -69,7 +69,8 @@ extension List {
         case .failure(let coreError):
             switch coreError {
             case .listOperation(_, _, let error),
-                 .clientValidation(_, _, let error):
+                 .clientValidation(_, _, let error),
+                 .loadOperation(_, _, let error):
                 completion(.failure(causedBy: error ?? coreError))
             }
         }

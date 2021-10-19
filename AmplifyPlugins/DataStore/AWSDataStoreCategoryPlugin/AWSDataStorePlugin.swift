@@ -100,6 +100,7 @@ final public class AWSDataStorePlugin: DataStoreCategoryPlugin {
         modelRegistration.registerModels(registry: ModelRegistry.self)
         resolveSyncEnabled()
         ModelListDecoderRegistry.registerDecoder(DataStoreListDecoder.self)
+        LazyModelDecoderRegistry.registerDecoder(DataStoreLazyModelDecoder.self)
     }
 
     func reinitStorageEngineIfNeeded(completion: @escaping DataStoreCallback<Void> = {_ in}) {

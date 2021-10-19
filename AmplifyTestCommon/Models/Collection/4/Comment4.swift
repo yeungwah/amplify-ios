@@ -12,13 +12,13 @@ import Foundation
 public struct Comment4: Model {
   public let id: String
   public var content: String
-  public var post: Post4?
+  public var post: LazyModel<Post4>?
 
   public init(id: String = UUID().uuidString,
       content: String,
       post: Post4? = nil) {
       self.id = id
       self.content = content
-      self.post = post
+      self.post = LazyModel(post)
   }
 }

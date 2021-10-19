@@ -50,8 +50,10 @@ private let logger = Amplify.Logging.logger(forCategory: .dataStore)
 
 extension Model {
 
-    /// Get the values of a `Model` for the fields relevant to a SQL query. The order of the
-    /// values follow the same order of the model's columns.
+    /// Extract the values of a `Model` instance into fields relevant for a SQL statement. This is used by the save
+    /// operation, which either creates the `InsertStatement` and `UpdateStatement` when computing the variables for the
+    /// SQL statement.
+    /// The order of the values follow the same order of the model's columns.
     ///
     /// Use the `fields` parameter to convert just a subset of fields.
     ///
@@ -101,14 +103,16 @@ extension Model {
                case let .model(modelName) = field.type,
                let modelSchema = ModelRegistry.modelSchema(from: modelName) {
 
-                // Check if it is a Model or json object.
+                // Check if it is a Model or json object or a Lazy Model
                 if let value = value as? Model {
                     let associatedModel: Model.Type = type(of: value)
                     return value[associatedModel.schema.primaryKey.name] as? String
-
                 } else if let value = value as? [String: JSONValue],
                    case .string(let primaryKeyValue) = value[modelSchema.primaryKey.name] {
                     return primaryKeyValue
+                } else if let value = value as? LazyModelMarker {
+                    print("Extracting id from LazyModel: \(value.id)")
+                    return value.id
                 }
             }
 
