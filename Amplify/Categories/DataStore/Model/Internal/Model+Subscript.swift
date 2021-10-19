@@ -24,12 +24,7 @@ extension Model {
         }
 
         let mirror = Mirror(reflecting: self)
-        print("printing children")
-        for child in mirror.children {
-            print(child.label ?? "")
-            print(child.value)
-        }
-        let firstChild = mirror.children.first { $0.label == key || $0.label == ("_" + key) }
+        let firstChild = mirror.children.first { $0.label == key }
         guard let property = firstChild else {
             return nil
         }

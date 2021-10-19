@@ -39,7 +39,7 @@ extension Comment4a {
    public enum CodingKeys: String, ModelKey {
     case id
     case content
-    case _post
+    case post
   }
 
   public static let keys = CodingKeys.self

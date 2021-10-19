@@ -27,21 +27,12 @@ class DataStoreListProviderFunctionalTests: BaseDataStoreTests {
             }
         }
         wait(for: [savePostSuccess], timeout: 1)
-        let saveCommentSuccess = expectation(description: "save comment successful")
 
-        let comment = Comment4a(content: "Comment 1", post: .init(post))
+        let saveCommentSuccess = expectation(description: "save comment successful")
+        let comment = Comment4a(content: "Comment 1", post: post)
         storageAdapter.save(comment) {
             switch $0 {
-            case .success(let comment):
-                print(comment)
-
-                guard let postInternal = comment.post else {
-                    XCTFail("Post is nil")
-                    return
-                }
-
-                XCTAssertEqual(postInternal.id, post.id)
-                XCTAssertEqual(postInternal.title, post.title)
+            case .success:
                 saveCommentSuccess.fulfill()
             case .failure(let error):
                 XCTFail(error.errorDescription)
@@ -49,6 +40,38 @@ class DataStoreListProviderFunctionalTests: BaseDataStoreTests {
         }
         wait(for: [saveCommentSuccess], timeout: 1)
 
+        let queryCommentSuccess = expectation(description: "query comment successful")
+        let predicate: QueryPredicate = field("id") == comment.id
+        storageAdapter.query(modelSchema: Comment4a.schema, predicate: predicate) { result in
+            switch result {
+            case .success(let results):
+                guard let comment = results.first as? Comment4a else {
+                    XCTFail("error querying comment")
+                    return
+                }
+
+                print(comment)
+
+                guard let postInternal = comment.post else {
+                    XCTFail("Post is nil")
+                    return
+                }
+
+                guard case .notLoaded = postInternal.loadedState else {
+                    XCTFail("Should not be in loaded state")
+                    return
+                }
+
+                print("Lazy loading post... ")
+                print("Post instance: \(postInternal.instance)")
+                print("Loaded state: \(postInternal.loadedState)")
+                queryCommentSuccess.fulfill()
+            case .failure(let error):
+                XCTFail(error.errorDescription)
+            }
+        }
+
+        wait(for: [queryCommentSuccess], timeout: 1)
     }
 
     func testDataStoreListProviderWithAssociationDataShouldLoad() {
