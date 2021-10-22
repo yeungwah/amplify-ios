@@ -82,12 +82,36 @@ extension Statement: StatementModelConvertible {
                 """)
                 continue
             }
-
+            print(field)
             let modelValue = try SQLiteModelValueConverter.convertToSource(
                 from: value,
                 fieldType: field.type
             )
             modelDictionary.updateValue(modelValue, forKeyPath: column)
+
+            // create lazy model for many-to-one and has-one relationships
+            if let association = field.association {
+                switch association {
+                case .belongsTo(let associatedFieldName, let targetName):
+                    if let id = value as? String {
+                        // what is the field's type name?
+                        if case .model = field.type {
+                            let lazyModel = LazyModel<AnyModel>.lazyInit(id: id)
+                            print("Storing Lazy Model belongsTo key: \(field.name) value: \(lazyModel)")
+                            modelDictionary.updateValue(lazyModel, forKeyPath: field.name)
+                        }
+                    }
+                case .hasOne(let associatedFieldName, let targetName):
+                    if let id = value as? String {
+                        print("Storing Lazy Model hasOne key: \(field.name) value: \(id)")
+                        let lazyModel = LazyModel<AnyModel>.lazyInit(id: id)
+                        modelDictionary.updateValue(lazyModel, forKeyPath: field.name)
+                    }
+
+                case .hasMany:
+                    print("hasMany ignore. since we create the many relationships from the iteration on primary key.")
+                }
+            }
 
             // create lazy list for "many" relationships
             if let id = modelValue as? String, field.isPrimaryKey {
@@ -100,9 +124,11 @@ extension Statement: StatementModelConvertible {
                     let lazyList = List<AnyModel>.lazyInit(associatedId: id,
                                                            associatedWith: associatedField)
                     let listKeyPath = prefix + association.name
+                    print("Lazy List init \(lazyList) \(listKeyPath)")
                     modelDictionary.updateValue(lazyList, forKeyPath: listKeyPath)
                 }
             }
+
         }
         // swiftlint:disable:next force_cast
         return modelDictionary as! ModelValues
@@ -121,6 +147,14 @@ internal extension List {
             "associatedId": associatedId,
             "associatedField": associatedWith,
             "elements": []
+        ]
+    }
+}
+
+internal extension LazyModel {
+    static func lazyInit(id: String) -> [String: Any?] {
+        return [
+            "id": id
         ]
     }
 }

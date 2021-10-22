@@ -35,8 +35,13 @@ PODS:
     - AWSCognitoIdentityProvider (= 2.26.2)
     - AWSCognitoIdentityProviderASF (= 2.26.2)
     - AWSCore (= 2.26.2)
+<<<<<<< HEAD
   - AWSPluginsCore (1.15.3):
     - Amplify (= 1.15.3)
+=======
+  - AWSPluginsCore (1.15.2):
+    - Amplify (= 1.15.2)
+>>>>>>> 043750ed (poc lazy load)
     - AWSCore (~> 2.26.1)
   - CwlCatchException (1.0.2)
   - CwlPreconditionTesting (1.1.1):

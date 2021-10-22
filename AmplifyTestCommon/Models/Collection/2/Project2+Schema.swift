@@ -14,7 +14,6 @@ extension Project2 {
    public enum CodingKeys: String, ModelKey {
     case id
     case name
-    case teamID
     case team
   }
 
@@ -29,7 +28,6 @@ extension Project2 {
     model.fields(
       .id(),
       .field(project2.name, is: .optional, ofType: .string),
-      .field(project2.teamID, is: .required, ofType: .string),
       .hasOne(project2.team, is: .optional, ofType: Team2.self, associatedWith: Team2.keys.id, targetName: "teamID")
     )
     }

@@ -172,6 +172,10 @@
 		21AD4257249BFFE00016FE95 /* DeprecatedTodo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21AD4255249BFFDF0016FE95 /* DeprecatedTodo.swift */; };
 		21AD425A249C0D910016FE95 /* AnyModelTester.swift in Sources */ = {isa = PBXBuildFile; fileRef = 213481D8242AFA62001966DE /* AnyModelTester.swift */; };
 		21AD425B249C0DBE0016FE95 /* AnyModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8EE772238621320097E4F1 /* AnyModelTests.swift */; };
+		21B82EFD271DF46F000EC306 /* LazyModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21B82EFC271DF46F000EC306 /* LazyModel.swift */; };
+		21B82F01271F14A7000EC306 /* LazyModelProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21B82F00271F14A7000EC306 /* LazyModelProvider.swift */; };
+		21B82F03271F15D9000EC306 /* LoadedLazyModelProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21B82F02271F15D9000EC306 /* LoadedLazyModelProvider.swift */; };
+		21B82F05271F2326000EC306 /* LazyModelDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21B82F04271F2326000EC306 /* LazyModelDecoder.swift */; };
 		21C395B3245729EC00597EA2 /* AppSyncErrorType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21C395B2245729EC00597EA2 /* AppSyncErrorType.swift */; };
 		21D79FDA237617C60057D00D /* SubscriptionEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21D79FD9237617C60057D00D /* SubscriptionEvent.swift */; };
 		21D79FE32377F4120057D00D /* SubscriptionConnectionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21D79FE22377F4120057D00D /* SubscriptionConnectionState.swift */; };
@@ -1010,6 +1014,10 @@
 		21AAE23E26DFE94B007BA909 /* ModelSyncMetadata+Schema.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ModelSyncMetadata+Schema.swift"; sourceTree = "<group>"; };
 		21AAE23F26DFE94B007BA909 /* ModelSyncMetadata.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ModelSyncMetadata.swift; sourceTree = "<group>"; };
 		21AD4255249BFFDF0016FE95 /* DeprecatedTodo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DeprecatedTodo.swift; path = Deprecated/DeprecatedTodo.swift; sourceTree = "<group>"; };
+		21B82EFC271DF46F000EC306 /* LazyModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LazyModel.swift; sourceTree = "<group>"; };
+		21B82F00271F14A7000EC306 /* LazyModelProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LazyModelProvider.swift; sourceTree = "<group>"; };
+		21B82F02271F15D9000EC306 /* LoadedLazyModelProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadedLazyModelProvider.swift; sourceTree = "<group>"; };
+		21B82F04271F2326000EC306 /* LazyModelDecoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LazyModelDecoder.swift; sourceTree = "<group>"; };
 		21C395B2245729EC00597EA2 /* AppSyncErrorType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSyncErrorType.swift; sourceTree = "<group>"; };
 		21D79FD9237617C60057D00D /* SubscriptionEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionEvent.swift; sourceTree = "<group>"; };
 		21D79FE22377F4120057D00D /* SubscriptionConnectionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionConnectionState.swift; sourceTree = "<group>"; };
@@ -2200,6 +2208,8 @@
 			isa = PBXGroup;
 			children = (
 				216E4619249189050035E3CE /* Embedded.swift */,
+				21B82F04271F2326000EC306 /* LazyModelDecoder.swift */,
+				21B82F00271F14A7000EC306 /* LazyModelProvider.swift */,
 				B9FAA17F238FBB5D009414B4 /* Model+Array.swift */,
 				B92E03AC2367CE7A006CEB8D /* Model+Codable.swift */,
 				FACBA78C23949588006349C8 /* Model+DateFormatting.swift */,
@@ -2222,6 +2232,15 @@
 				213481D8242AFA62001966DE /* AnyModelTester.swift */,
 			);
 			path = AnyModel;
+			sourceTree = "<group>";
+		};
+		21B82EFB271DF457000EC306 /* Lazy */ = {
+			isa = PBXGroup;
+			children = (
+				21B82EFC271DF46F000EC306 /* LazyModel.swift */,
+				21B82F02271F15D9000EC306 /* LoadedLazyModelProvider.swift */,
+			);
+			path = Lazy;
 			sourceTree = "<group>";
 		};
 		21C395B4245729F100597EA2 /* API */ = {
@@ -2945,6 +2964,7 @@
 		B92E03A62367CE7A006CEB8D /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				21B82EFB271DF457000EC306 /* Lazy */,
 				B4944D1F251C06D300BF0BFE /* JSONHelper */,
 				B92E03A72367CE7A006CEB8D /* Model.swift */,
 				FA8EE778238627040097E4F1 /* Model+ModelName.swift */,
@@ -4967,6 +4987,7 @@
 				FAC23545227A055200424678 /* AmplifyConfiguration.swift in Sources */,
 				FA00F68C24DA3A8F003E8A71 /* AuthCategoryUserBehavior+Combine.swift in Sources */,
 				95DAAB84237F13940028544F /* VoiceType.swift in Sources */,
+				21B82F05271F2326000EC306 /* LazyModelDecoder.swift in Sources */,
 				FAA2E8C223A00D5800E420EA /* APICategory+Resettable.swift in Sources */,
 				B4FA336324105D1800E1C659 /* AuthCategoryPlugin.swift in Sources */,
 				B4B1E0E524733687007F3261 /* AuthEventName.swift in Sources */,
@@ -5036,6 +5057,7 @@
 				974FF1A324BE16F90050D01B /* EnvironmentInfoHelper.swift in Sources */,
 				974FF12D24B0434B0050D01B /* DevMenuPresentationContextProvider.swift in Sources */,
 				21687A41236371E1004A056E /* AnalyticsError.swift in Sources */,
+				21B82F01271F14A7000EC306 /* LazyModelProvider.swift in Sources */,
 				FAC23528227A053D00424678 /* AnalyticsCategory+ClientBehavior.swift in Sources */,
 				B43CD8562411472300BF5A60 /* AuthSignUpResult.swift in Sources */,
 				FACD26512386E9410068FBE6 /* JSONValue+KeyPath.swift in Sources */,
@@ -5074,6 +5096,7 @@
 				FADB3A6823612940006D6FE9 /* BasicClosure.swift in Sources */,
 				FAAFAF3D2390D4A6002CF932 /* AmplifyErrorMessages.swift in Sources */,
 				B92E03B32367CE7A006CEB8D /* DataStoreCategory.swift in Sources */,
+				21B82F03271F15D9000EC306 /* LoadedLazyModelProvider.swift in Sources */,
 				977007E324C1585100848468 /* LogEntryItem.swift in Sources */,
 				FA9FB77D232AA0D800C04D32 /* FilteredListener.swift in Sources */,
 				97DC3D5224C1FE4100D79E24 /* LogViewer.swift in Sources */,
@@ -5247,6 +5270,7 @@
 				FAC235A3227A5ED000424678 /* HubChannel.swift in Sources */,
 				FAA2E8CE23A02A8100E420EA /* PredictionsCategory+Resettable.swift in Sources */,
 				FAC23516227A053D00424678 /* StorageCategoryBehavior.swift in Sources */,
+				21B82EFD271DF46F000EC306 /* LazyModel.swift in Sources */,
 				FA4E730E232829F1003B8EEB /* Resettable.swift in Sources */,
 				FAC23518227A053D00424678 /* StorageCategoryPlugin.swift in Sources */,
 				B42B3D3B246AE178007211E0 /* AuthInvalidateCredentialBehavior.swift in Sources */,

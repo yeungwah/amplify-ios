@@ -207,10 +207,12 @@ extension ModelField {
     ///   application making any change to these `public` types should be backward compatible, otherwise it will be a
     ///   breaking change.
     public var isAssociationOwner: Bool {
-        guard case .belongsTo = association else {
-            return false
+        if case .belongsTo = association {
+            return true
+        } else if case .hasOne = association {
+            return true
         }
-        return true
+        return false
     }
 
     /// - Warning: Although this has `public` access, it is intended for internal & codegen use and should not be used
