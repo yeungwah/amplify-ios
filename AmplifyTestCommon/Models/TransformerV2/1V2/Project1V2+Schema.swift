@@ -17,7 +17,7 @@ extension Project1V2 {
     case team
     case createdAt
     case updatedAt
-    case project1V2TeamId
+    // case project1V2TeamId
   }
 
   public static let keys = CodingKeys.self
@@ -37,8 +37,8 @@ extension Project1V2 {
       .field(project1V2.name, is: .optional, ofType: .string),
       .hasOne(project1V2.team, is: .optional, ofType: Team1V2.self, associatedWith: Team1V2.keys.id, targetName: "project1V2TeamId"),
       .field(project1V2.createdAt, is: .optional, isReadOnly: true, ofType: .dateTime),
-      .field(project1V2.updatedAt, is: .optional, isReadOnly: true, ofType: .dateTime),
-      .field(project1V2.project1V2TeamId, is: .optional, ofType: .string)
+      .field(project1V2.updatedAt, is: .optional, isReadOnly: true, ofType: .dateTime) // ,
+      // .field(project1V2.project1V2TeamId, is: .optional, ofType: .string)
     )
     }
 }

@@ -35,7 +35,7 @@ class DataStoreConnectionScenario3aV2Tests: SyncEngineIntegrationV2TestBase {
     func testSavePostAndCommentSyncToCloud() throws {
         try startAmplifyAndWaitForSync()
         let post = Post3aV2(title: "title")
-        let comment = Comment3aV2(content: "content", post3aV2CommentsId: post.id)
+        let comment = Comment3aV2(content: "content", post3aV2CommentsId: post)
         let syncedPostReceived = expectation(description: "received post from sync event")
         let syncCommentReceived = expectation(description: "received comment from sync event")
         let hubListener = Amplify.Hub.listen(to: .dataStore,
@@ -97,7 +97,7 @@ class DataStoreConnectionScenario3aV2Tests: SyncEngineIntegrationV2TestBase {
             XCTFail("Could not create post")
             return
         }
-        guard saveComment(post3aV2CommentsId: post.id, content: "content") != nil else {
+        guard saveComment(post3aV2CommentsId: post, content: "content") != nil else {
             XCTFail("Could not create comment")
             return
         }
@@ -140,7 +140,7 @@ class DataStoreConnectionScenario3aV2Tests: SyncEngineIntegrationV2TestBase {
             XCTFail("Could not create post")
             return
         }
-        guard var comment = saveComment(post3aV2CommentsId: post.id, content: "content") else {
+        guard var comment = saveComment(post3aV2CommentsId: post, content: "content") else {
             XCTFail("Could not create comment")
             return
         }
@@ -149,11 +149,11 @@ class DataStoreConnectionScenario3aV2Tests: SyncEngineIntegrationV2TestBase {
             return
         }
         let updateCommentSuccessful = expectation(description: "update comment")
-        comment.post3aV2CommentsId = anotherPost.id
+        comment.post3aV2CommentsId = anotherPost
         Amplify.DataStore.save(comment) { result in
             switch result {
             case .success(let updatedComment):
-                XCTAssertEqual(updatedComment.post3aV2CommentsId, anotherPost.id)
+                XCTAssertEqual(updatedComment.post3aV2CommentsId, anotherPost)
                 updateCommentSuccessful.fulfill()
             case .failure(let error):
                 XCTFail("\(error)")
@@ -168,7 +168,7 @@ class DataStoreConnectionScenario3aV2Tests: SyncEngineIntegrationV2TestBase {
             XCTFail("Could not create post")
             return
         }
-        guard let comment = saveComment(post3aV2CommentsId: post.id, content: "content") else {
+        guard let comment = saveComment(post3aV2CommentsId: post, content: "content") else {
             XCTFail("Could not create comment")
             return
         }
@@ -205,7 +205,7 @@ class DataStoreConnectionScenario3aV2Tests: SyncEngineIntegrationV2TestBase {
             XCTFail("Could not create post")
             return
         }
-        guard saveComment(post3aV2CommentsId: post.id, content: "content") != nil else {
+        guard saveComment(post3aV2CommentsId: post, content: "content") != nil else {
             XCTFail("Could not create comment")
             return
         }
@@ -364,7 +364,7 @@ class DataStoreConnectionScenario3aV2Tests: SyncEngineIntegrationV2TestBase {
             XCTFail("Could not create post")
             return
         }
-        guard let comment = saveComment(post3aV2CommentsId: post.id, content: "content") else {
+        guard let comment = saveComment(post3aV2CommentsId: post, content: "content") else {
             XCTFail("Could not create comment")
             return
         }
@@ -446,7 +446,7 @@ class DataStoreConnectionScenario3aV2Tests: SyncEngineIntegrationV2TestBase {
         return result
     }
 
-    func saveComment(id: String = UUID().uuidString, post3aV2CommentsId: String, content: String) -> Comment3aV2? {
+    func saveComment(id: String = UUID().uuidString, post3aV2CommentsId: Post3aV2?, content: String) -> Comment3aV2? {
         let comment = Comment3aV2(id: id, content: content, post3aV2CommentsId: post3aV2CommentsId)
         var result: Comment3aV2?
         let completeInvoked = expectation(description: "request completed")

@@ -14,7 +14,7 @@ extension Project2V2 {
    public enum CodingKeys: String, ModelKey {
     case id
     case name
-    case teamID
+    // case teamID
     case team
     case createdAt
     case updatedAt
@@ -35,7 +35,7 @@ extension Project2V2 {
     model.fields(
       .id(),
       .field(project2V2.name, is: .optional, ofType: .string),
-      .field(project2V2.teamID, is: .required, ofType: .string),
+      // .field(project2V2.teamID, is: .required, ofType: .string),
       .hasOne(project2V2.team, is: .optional, ofType: Team2V2.self, associatedWith: Team2V2.keys.id, targetName: "teamID"),
       .field(project2V2.createdAt, is: .optional, isReadOnly: true, ofType: .dateTime),
       .field(project2V2.updatedAt, is: .optional, isReadOnly: true, ofType: .dateTime)

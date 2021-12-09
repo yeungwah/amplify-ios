@@ -32,7 +32,7 @@ extension Comment3aV2 {
       .field(comment3aV2.content, is: .required, ofType: .string),
       .field(comment3aV2.createdAt, is: .optional, isReadOnly: true, ofType: .dateTime),
       .field(comment3aV2.updatedAt, is: .optional, isReadOnly: true, ofType: .dateTime),
-      .field(comment3aV2.post3aV2CommentsId, is: .optional, ofType: .string)
+      .belongsTo(comment3aV2.post3aV2CommentsId, is: .optional, ofType: Post3aV2.self, targetName: "post3aV2CommentsId")
     )
     }
 }

@@ -14,22 +14,22 @@ public struct Comment3aV2: Model {
   public var content: String
   public var createdAt: Temporal.DateTime?
   public var updatedAt: Temporal.DateTime?
-  public var post3aV2CommentsId: String?
+  public var post3aV2CommentsId: Post3aV2?
 
   public init(id: String = UUID().uuidString,
       content: String,
-      post3aV2CommentsId: String? = nil) {
+              post3aV2CommentsId: Post3aV2? = nil) {
     self.init(id: id,
       content: content,
       createdAt: nil,
       updatedAt: nil,
-      post3aV2CommentsId: post3aV2CommentsId)
+              post3aV2CommentsId: post3aV2CommentsId)
   }
   internal init(id: String = UUID().uuidString,
       content: String,
       createdAt: Temporal.DateTime? = nil,
       updatedAt: Temporal.DateTime? = nil,
-      post3aV2CommentsId: String? = nil) {
+                post3aV2CommentsId: Post3aV2? = nil) {
       self.id = id
       self.content = content
       self.createdAt = createdAt

@@ -1,6 +1,6 @@
 input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
 
-# Has One (Implicit Field)
+# 4 Has One (Implicit Field)
 
 type Project1V2 @model @auth(rules: [{allow: public}]) {
   id: ID!
@@ -13,7 +13,7 @@ type Team1V2 @model @auth(rules: [{allow: public}]) {
   name: String!
 }
 
-# Has One (Explicit Field)
+# 5 Has One (Explicit Field)
 
 type Project2V2 @model @auth(rules: [{allow: public}]) {
   id: ID!
