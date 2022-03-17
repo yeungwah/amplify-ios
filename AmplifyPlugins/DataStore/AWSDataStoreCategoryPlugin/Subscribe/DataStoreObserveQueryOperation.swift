@@ -393,14 +393,14 @@ public class AWSDataStoreObserveQueryOperation<M: Model>: AsynchronousOperation,
     }
 
     private func startSnapshotStopWatch() {
-        if log.logLevel >= .debug {
+        if log.logLevel == .debug {
             stopwatch.start()
         }
     }
 
     private func sendSnapshot() {
         passthroughPublisher.send(currentSnapshot)
-        if log.logLevel >= .debug {
+        if log.logLevel == .debug {
             let time = stopwatch.stop()
             log.debug("Time to generate snapshot: \(time) seconds")
         }

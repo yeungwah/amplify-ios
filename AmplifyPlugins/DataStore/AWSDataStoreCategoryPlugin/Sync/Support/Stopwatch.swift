@@ -14,6 +14,11 @@ class Stopwatch {
     var startTime: DispatchTime?
     var lapStart: DispatchTime?
 
+    init(start: Bool = false) {
+        if start {
+            self.start()
+        }
+    }
     /// Marks the beginning of the stopwatch.
     /// If called multiple times, the latest call will overwrite the previous start values.
     func start() {

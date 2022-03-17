@@ -21,6 +21,10 @@ protocol ModelStorageBehavior {
                         condition: QueryPredicate?,
                         completion: @escaping DataStoreCallback<M>)
 
+    func batchSave<M: Model>(_ models: [M],
+                             modelSchema: ModelSchema,
+                             completion: @escaping DataStoreCallback<M>)
+
     func delete<M: Model>(_ modelType: M.Type,
                           modelSchema: ModelSchema,
                           withId id: Model.Identifier,

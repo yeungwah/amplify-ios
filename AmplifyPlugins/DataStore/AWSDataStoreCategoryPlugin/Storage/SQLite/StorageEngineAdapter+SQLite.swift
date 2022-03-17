@@ -10,6 +10,7 @@ import Foundation
 import SQLite
 import AWSPluginsCore
 
+// swiftlint:disable type_body_length
 /// [SQLite](https://sqlite.org) `StorageEngineAdapter` implementation. This class provides
 /// an integration layer between the AppSyncLocal `StorageEngine` and SQLite for local storage.
 final class SQLiteStorageEngineAdapter: StorageEngineAdapter {
@@ -192,6 +193,111 @@ final class SQLiteStorageEngineAdapter: StorageEngineAdapter {
             completion(.failure(causedBy: error))
         }
     }
+
+    func singleSave<M: Model>(_ model: M, modelSchema: ModelSchema, completion: DataStoreCallback<M>) {
+        guard let connection = connection else {
+            completion(.failure(DataStoreError.nilSQLiteConnection()))
+            return
+        }
+
+        do {
+            let statement = InsertStatement(model: model, modelSchema: modelSchema)
+            _ = try connection.prepare(statement.stringValue).run(statement.variables)
+            // load the recent saved instance and pass it back to the callback
+            let modelType = type(of: model)
+            query(modelType, modelSchema: modelSchema, predicate: field("id").eq(model.id)) {
+                switch $0 {
+                case .success(let result):
+                    if let saved = result.first {
+                        completion(.success(saved))
+                    } else {
+                        completion(.failure(.nonUniqueResult(model: modelType.modelName,
+                                                             count: result.count)))
+                    }
+                case .failure(let error):
+                    completion(.failure(error))
+                }
+            }
+        } catch {
+            completion(.failure(causedBy: error))
+        }
+
+    }
+
+    func batchSave0<M: Model>(_ model1: M, _ model2: M, modelSchema: ModelSchema, completion: DataStoreCallback<M>) {
+        guard let connection = connection else {
+            completion(.failure(DataStoreError.nilSQLiteConnection()))
+            return
+        }
+
+        do {
+            let statement = BatchInsertStatement0(model1: model1, model2: model2, modelSchema: modelSchema)
+            print(statement.stringValue)
+            print(statement.variables)
+            _ = try connection.prepare(statement.stringValue).run(statement.variables)
+            // load the recent saved instance and pass it back to the callback
+            let modelType = type(of: model1)
+            query(modelType, modelSchema: modelSchema, predicate: field("id").eq(model1.id) || field("id").eq(model2.id)) {
+                switch $0 {
+                case .success(let result):
+                    print("\(result)")
+                    if let saved = result.first {
+                        completion(.success(saved))
+                    } else {
+                        completion(.failure(.nonUniqueResult(model: modelType.modelName,
+                                                             count: result.count)))
+                    }
+                case .failure(let error):
+                    completion(.failure(error))
+                }
+            }
+        } catch {
+            completion(.failure(causedBy: error))
+        }
+    }
+
+    func batchSave<M: Model>(_ models: [M], modelSchema: ModelSchema, completion: DataStoreCallback<M>) {
+        print("Batch Saving metadata")
+        let stopWatch = Stopwatch(start: true)
+        guard let connection = connection else {
+            completion(.failure(DataStoreError.nilSQLiteConnection()))
+            return
+        }
+
+        guard let model = models.first else {
+            completion(.failure(DataStoreError.internalOperation("Missing models to save", "", nil)))
+            return
+        }
+
+        do {
+            let statement = BatchInsertStatement(models: models, modelSchema: modelSchema)
+            
+            _ = try connection.prepare(statement.stringValue).run(statement.variables)
+            // load the recent saved instance and pass it back to the callback
+            let modelType = type(of: model)
+
+            let predicate = field("id").eq(model.id) // need to create a dynamie predicate here?
+            // or change the callback.
+            query(modelType, modelSchema: modelSchema, predicate: predicate) {
+                switch $0 {
+                case .success(let result):
+                    // print("\(result)")
+                    if let saved = result.first {
+                        log.debug("Total time \(stopWatch.stop())")
+                        completion(.success(saved))
+                    } else {
+                        completion(.failure(.nonUniqueResult(model: modelType.modelName,
+                                                             count: result.count)))
+                    }
+                case .failure(let error):
+                    completion(.failure(error))
+                }
+            }
+        } catch {
+            completion(.failure(causedBy: error))
+        }
+    }
+
 
     func delete<M: Model>(_ modelType: M.Type,
                           modelSchema: ModelSchema,

@@ -14,7 +14,9 @@ protocol StorageEngineAdapter: AnyObject, ModelStorageBehavior, ModelStorageErro
     static var maxNumberOfPredicates: Int { get }
 
     // MARK: - Async APIs
-    func save(untypedModel: Model, completion: @escaping DataStoreCallback<Model>)
+    func save0(untypedModel: Model, completion: @escaping DataStoreCallback<Model>)
+
+    func saveBatch(untypedModels: [Model], completion: @escaping DataStoreCallback<Model>)
 
     func delete<M: Model>(_ modelType: M.Type,
                           modelSchema: ModelSchema,

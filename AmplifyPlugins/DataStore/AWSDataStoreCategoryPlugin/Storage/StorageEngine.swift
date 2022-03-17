@@ -235,6 +235,15 @@ final class StorageEngine: StorageEngineBehavior {
         save(model, modelSchema: model.schema, condition: condition, completion: completion)
     }
 
+    func batchSave<M>(_ models: [M], modelSchema: ModelSchema, completion: @escaping (DataStoreResult<M>) -> Void) where M: Model {
+        guard let model = models.first else {
+            completion(.failure(DataStoreError.internalOperation("", "", nil)))
+            return
+        }
+        save(model, modelSchema: model.schema, condition: nil, completion: completion)
+    }
+
+
     func delete<M: Model>(_ modelType: M.Type,
                           modelSchema: ModelSchema,
                           withId id: Model.Identifier,
