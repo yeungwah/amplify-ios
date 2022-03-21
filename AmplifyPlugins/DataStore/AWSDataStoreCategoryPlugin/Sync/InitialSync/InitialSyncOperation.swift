@@ -35,7 +35,9 @@ final class InitialSyncOperation: AsynchronousOperation {
     var publisher: AnyPublisher<InitialSyncOperationEvent, DataStoreError> {
         return initialSyncOperationTopic.eraseToAnyPublisher()
     }
-
+    var items: [MutationSync<AnyModel>] = []
+    var stopwatch = Stopwatch()
+    var shouldGroup: Bool = true
     init(modelSchema: ModelSchema,
          api: APICategoryGraphQLBehavior?,
          reconciliationQueue: IncomingEventReconciliationQueue?,
@@ -63,6 +65,8 @@ final class InitialSyncOperation: AsynchronousOperation {
         let lastSyncTime = getLastSyncTime()
         let syncType: SyncType = lastSyncTime == nil ? .fullSync : .deltaSync
         initialSyncOperationTopic.send(.started(modelName: modelSchema.name, syncType: syncType))
+        shouldGroup = true
+        stopwatch.start()
         query(lastSyncTime: lastSyncTime)
     }
 
@@ -183,7 +187,12 @@ final class InitialSyncOperation: AsynchronousOperation {
         let items = syncQueryResult.items
         recordsReceived += UInt(items.count)
 
-        reconciliationQueue.offer(items, modelSchema: modelSchema)
+        if shouldGroup {
+            self.items.append(contentsOf: items)
+        } else {
+            reconciliationQueue.offer(items, modelSchema: modelSchema)
+        }
+        
         for item in items {
             initialSyncOperationTopic.send(.enqueued(item, modelName: modelSchema.name))
         }
@@ -193,6 +202,11 @@ final class InitialSyncOperation: AsynchronousOperation {
                 self.query(lastSyncTime: lastSyncTime, nextToken: nextToken)
             }
         } else {
+            log.debug("Total time \(modelSchema.name) \(stopwatch.stop())")
+            if shouldGroup {
+                reconciliationQueue.offer(self.items, modelSchema: modelSchema)
+            }
+            
             initialSyncOperationTopic.send(.finished(modelName: modelSchema.name))
             updateModelSyncMetadata(lastSyncTime: syncQueryResult.startedAt)
         }

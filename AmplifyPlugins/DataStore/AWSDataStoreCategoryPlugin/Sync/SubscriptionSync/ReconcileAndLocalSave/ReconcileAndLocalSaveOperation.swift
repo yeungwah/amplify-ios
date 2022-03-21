@@ -165,7 +165,7 @@ class ReconcileAndLocalSaveOperation: AsynchronousOperation {
             let stopwatch = Stopwatch(start: true)
             var result: Result<[MutationEvent], DataStoreError> = .failure(Self.unfulfilledDataStoreError())
             defer {
-                self.log.debug("queryPendingMutations Total time: \(stopwatch.stop())s")
+                self.log.debug("queryPendingMutations \(self.modelSchema.name) Total time: \(stopwatch.stop())s")
                 promise(result)
             }
             guard !self.isCancelled else {
@@ -216,7 +216,7 @@ class ReconcileAndLocalSaveOperation: AsynchronousOperation {
             var result: Result<([RemoteModel], [LocalMetadata]), DataStoreError> =
                 .failure(Self.unfulfilledDataStoreError())
             defer {
-                self.log.debug("queryLocalMetadata Total time: \(stopwatch.stop())s")
+                self.log.debug("queryLocalMetadata \(self.modelSchema.name) Total time: \(stopwatch.stop())s")
                 promise(result)
             }
             guard !self.isCancelled else {
@@ -269,7 +269,7 @@ class ReconcileAndLocalSaveOperation: AsynchronousOperation {
             let stopwatch = Stopwatch(start: true)
             var result: Result<Void, DataStoreError> = .failure(Self.unfulfilledDataStoreError())
             defer {
-                self.log.debug("applyRemoteModelsDispositions Total time: \(stopwatch.stop())s")
+                self.log.debug("applyRemoteModelsDispositions \(self.modelSchema.name) Total time: \(stopwatch.stop())s")
                 promise(result)
             }
             guard !self.isCancelled else {
@@ -287,20 +287,23 @@ class ReconcileAndLocalSaveOperation: AsynchronousOperation {
                 return
             }
 
+            var shouldBatch = true
             var publishers: [Publishers.FlatMap<Future<Void, DataStoreError>,
                              Future<ReconcileAndLocalSaveOperation.ApplyRemoteModelResult, DataStoreError>>] = []
             for disposition in dispositions {
                 switch disposition {
                 case .create(let remoteModel):
-                    break
-//                    let publisher = self.save(storageAdapter: storageAdapter,
-//                                              remoteModel: remoteModel)
-//                        .flatMap { applyResult in
-//                            self.saveMetadata(storageAdapter: storageAdapter,
-//                                              applyResult: applyResult,
-//                                              mutationType: .create)
-//                        }
-//                    return publisher
+                    if !shouldBatch {
+                        let publisher = self.save(storageAdapter: storageAdapter,
+                                                  remoteModel: remoteModel)
+                            .flatMap { applyResult in
+                                self.saveMetadata(storageAdapter: storageAdapter,
+                                                  applyResult: applyResult,
+                                                  mutationType: .create)
+                            }
+                        publishers.append(publisher)
+                    }
+
                 case .update(let remoteModel):
                     let publisher = self.save(storageAdapter: storageAdapter,
                                               remoteModel: remoteModel)
@@ -320,30 +323,29 @@ class ReconcileAndLocalSaveOperation: AsynchronousOperation {
                         }
                     publishers.append(publisher)
                 }
-
             }
 
-            var batchSaveRemoteModels: [RemoteSyncReconciler.RemoteModel] = []
-            for disposition in dispositions {
-                switch disposition {
-                case .create(let remoteModel):
-                    batchSaveRemoteModels.append(remoteModel)
+            if shouldBatch {
+                var batchSaveRemoteModels: [RemoteSyncReconciler.RemoteModel] = []
+                for disposition in dispositions {
+                    switch disposition {
+                    case .create(let remoteModel):
+                        batchSaveRemoteModels.append(remoteModel)
 
-                default:
-                    break
+                    default:
+                        break
+                    }
                 }
+                let batchSavePublisher = self.saveBatch(storageAdapter: storageAdapter, remoteModels: batchSaveRemoteModels)
+                    .flatMap { _ in
+                        self.saveMetadataBatch(storageAdapter: storageAdapter,
+                                               models: batchSaveRemoteModels,
+                                               mutationType: .create)
+                    }
+
+                publishers.append(batchSavePublisher)
             }
 
-            // the above will always be applied.
-
-            let batchSavePublisher = self.saveBatch(storageAdapter: storageAdapter, remoteModels: batchSaveRemoteModels)
-                .flatMap { _ in
-                    self.saveMetadataBatch(storageAdapter: storageAdapter,
-                                           models: batchSaveRemoteModels,
-                                           mutationType: .create)
-                }
-
-            publishers.append(batchSavePublisher)
             Publishers.MergeMany(publishers)
                 .collect()
                 .sink(
@@ -527,7 +529,7 @@ class ReconcileAndLocalSaveOperation: AsynchronousOperation {
 
     private func notifyFinished() {
         if log.logLevel == .debug {
-            log.debug("total time: \(stopwatch.stop())s")
+            log.debug("\(modelSchema.name) total time: \(stopwatch.stop())s")
         }
         mutationEventPublisher.send(completion: .finished)
         finish()

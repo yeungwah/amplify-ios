@@ -11,7 +11,7 @@ import SQLite
 extension SQLiteStorageEngineAdapter {
 
     func save0(untypedModel: Model, completion: DataStoreCallback<Model>) {
-        let stopwatch = Stopwatch(start: true)
+        //let stopwatch = Stopwatch(start: true)
         guard let connection = connection else {
             completion(.failure(.nilSQLiteConnection()))
             return
@@ -43,7 +43,7 @@ extension SQLiteStorageEngineAdapter {
                 _ = try connection.prepare(statement.stringValue).run(statement.variables)
             }
 
-            log.debug("Total time \(stopwatch.stop())s")
+            //log.debug("Total time \(stopwatch.stop())s")
             completion(.success(untypedModel))
         } catch {
             completion(.failure(causedBy: error))
@@ -51,7 +51,7 @@ extension SQLiteStorageEngineAdapter {
     }
 
     func saveBatch(untypedModels: [Model], completion: DataStoreCallback<Model>) {
-        let stopwatch = Stopwatch(start: true)
+        //let stopwatch = Stopwatch(start: true)
         guard let connection = connection else {
             completion(.failure(.nilSQLiteConnection()))
             return
@@ -98,7 +98,7 @@ extension SQLiteStorageEngineAdapter {
                 _ = try connection.prepare(statement.stringValue).run(statement.variables)
             }
 
-            log.debug("Total time \(stopwatch.stop())s")
+            //log.debug("Total time \(stopwatch.stop())s")
             completion(.success(untypedModel))
         } catch {
             completion(.failure(causedBy: error))

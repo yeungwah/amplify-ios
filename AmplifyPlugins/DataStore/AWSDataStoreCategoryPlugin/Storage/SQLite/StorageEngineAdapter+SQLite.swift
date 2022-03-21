@@ -271,7 +271,7 @@ final class SQLiteStorageEngineAdapter: StorageEngineAdapter {
 
         do {
             let statement = BatchInsertStatement(models: models, modelSchema: modelSchema)
-            
+
             _ = try connection.prepare(statement.stringValue).run(statement.variables)
             // load the recent saved instance and pass it back to the callback
             let modelType = type(of: model)
