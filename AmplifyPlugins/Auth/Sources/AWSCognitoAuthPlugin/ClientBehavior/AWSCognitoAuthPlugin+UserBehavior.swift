@@ -8,10 +8,15 @@
 import Foundation
 import Amplify
 
+struct CognitoAuthUser: AuthUser {
+    let username: String
+    let userId: String
+}
+
 public extension AWSCognitoAuthPlugin {
 
     func fetchUserAttributes(options: AuthFetchUserAttributeOperation.Request.Options? = nil,
-                                    listener: AuthFetchUserAttributeOperation.ResultListener?)
+                             listener: AuthFetchUserAttributeOperation.ResultListener?)
     -> AuthFetchUserAttributeOperation {
 
         //        let options = options ?? AuthFetchUserAttributesRequest.Options()
@@ -20,8 +25,8 @@ public extension AWSCognitoAuthPlugin {
     }
 
     func update(userAttribute: AuthUserAttribute,
-                       options: AuthUpdateUserAttributeOperation.Request.Options? = nil,
-                       listener: AuthUpdateUserAttributeOperation.ResultListener?) -> AuthUpdateUserAttributeOperation
+                options: AuthUpdateUserAttributeOperation.Request.Options? = nil,
+                listener: AuthUpdateUserAttributeOperation.ResultListener?) -> AuthUpdateUserAttributeOperation
     {
         //        let options = options ?? AuthUpdateUserAttributeRequest.Options()
         //        let request = AuthUpdateUserAttributeRequest(userAttribute: userAttribute, options: options)
@@ -29,8 +34,8 @@ public extension AWSCognitoAuthPlugin {
     }
 
     func update(userAttributes: [AuthUserAttribute],
-                       options: AuthUpdateUserAttributesOperation.Request.Options? = nil,
-                       listener: AuthUpdateUserAttributesOperation.ResultListener?)
+                options: AuthUpdateUserAttributesOperation.Request.Options? = nil,
+                listener: AuthUpdateUserAttributesOperation.ResultListener?)
     -> AuthUpdateUserAttributesOperation {
         //        let options = options ?? AuthUpdateUserAttributesRequest.Options()
         //        let request = AuthUpdateUserAttributesRequest(userAttributes: userAttributes, options: options)
@@ -38,8 +43,8 @@ public extension AWSCognitoAuthPlugin {
     }
 
     func resendConfirmationCode(for attributeKey: AuthUserAttributeKey,
-                                       options: AuthAttributeResendConfirmationCodeOperation.Request.Options? = nil,
-                                       listener: AuthAttributeResendConfirmationCodeOperation.ResultListener?)
+                                options: AuthAttributeResendConfirmationCodeOperation.Request.Options? = nil,
+                                listener: AuthAttributeResendConfirmationCodeOperation.ResultListener?)
     -> AuthAttributeResendConfirmationCodeOperation {
         //        let options = options ?? AuthAttributeResendConfirmationCodeRequest.Options()
         //        let request = AuthAttributeResendConfirmationCodeRequest(attributeKey: attributeKey, options: options)
@@ -47,9 +52,9 @@ public extension AWSCognitoAuthPlugin {
     }
 
     func confirm(userAttribute: AuthUserAttributeKey,
-                        confirmationCode: String,
-                        options: AuthConfirmUserAttributeOperation.Request.Options? = nil,
-                        listener: AuthConfirmUserAttributeOperation.ResultListener?)
+                 confirmationCode: String,
+                 options: AuthConfirmUserAttributeOperation.Request.Options? = nil,
+                 listener: AuthConfirmUserAttributeOperation.ResultListener?)
     -> AuthConfirmUserAttributeOperation {
         //        let options = options ?? AuthConfirmUserAttributeRequest.Options()
         //        let request = AuthConfirmUserAttributeRequest(attributeKey: userAttribute,
@@ -59,9 +64,9 @@ public extension AWSCognitoAuthPlugin {
     }
 
     func update(oldPassword: String,
-                       to newPassword: String,
-                       options: AuthChangePasswordOperation.Request.Options? = nil,
-                       listener: AuthChangePasswordOperation.ResultListener?) -> AuthChangePasswordOperation
+                to newPassword: String,
+                options: AuthChangePasswordOperation.Request.Options? = nil,
+                listener: AuthChangePasswordOperation.ResultListener?) -> AuthChangePasswordOperation
     {
         //        let options = options ?? AuthChangePasswordRequest.Options()
         //        let request = AuthChangePasswordRequest(oldPassword: oldPassword,
@@ -71,6 +76,41 @@ public extension AWSCognitoAuthPlugin {
     }
 
     func getCurrentUser() -> AuthUser? {
-        fatalError("Not implemented")
+        var currentUser: AuthUser? = nil
+
+        // Note: blocking is not recommended
+        let group = DispatchGroup()
+
+        group.enter()
+        getCurrentUser { result in
+            currentUser = try? result.get()
+            group.leave()
+        }
+
+        group.wait()
+
+        return currentUser
     }
+
+    func getCurrentUserAsync() async -> AuthUser? {
+        await withCheckedContinuation { continuation in
+            self.getCurrentUser { result in
+                let authUser: AuthUser? = try? result.get()
+                continuation.resume(returning: authUser)
+            }
+        }
+    }
+
+    private func getCurrentUser(closure: @escaping (Result<AuthUser?, Error>) -> Void) {
+        authStateMachine.getCurrentState { authState in
+            if case .configured(let authorizationState, _) = authState,
+               case .signedIn(_, let signInData) = authorizationState {
+                let authUser = CognitoAuthUser(username: signInData.userName, userId: signInData.userId)
+                closure(.success(authUser))
+            } else {
+                closure(.success(nil))
+            }
+        }
+    }
+
 }
