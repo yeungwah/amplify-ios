@@ -11,7 +11,12 @@ public protocol AuthCategoryUserBehavior: AnyObject {
 
     /// Returns the currently logged in user.
     ///
+    @available(*, deprecated, message: "Use `getCurrentUserAsync` instead")
     func getCurrentUser() -> AuthUser?
+
+    /// Returns the currently logged in user.
+    ///
+    func getCurrentUserAsync() async -> AuthUser?
 
     /// Fetch user attributes for the current user.
     ///

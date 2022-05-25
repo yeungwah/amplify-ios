@@ -75,6 +75,7 @@ public extension AWSCognitoAuthPlugin {
         fatalError("Not implemented")
     }
 
+    @available(*, deprecated, message: "Use `getCurrentUserAsync` instead")
     func getCurrentUser() -> AuthUser? {
         var currentUser: AuthUser? = nil
 
@@ -103,8 +104,8 @@ public extension AWSCognitoAuthPlugin {
 
     private func getCurrentUser(closure: @escaping (Result<AuthUser?, Error>) -> Void) {
         authStateMachine.getCurrentState { authState in
-            if case .configured(let authorizationState, _) = authState,
-               case .signedIn(_, let signInData) = authorizationState {
+            if case .configured(let authenticationState, _) = authState,
+               case .signedIn(_, let signInData) = authenticationState {
                 let authUser = CognitoAuthUser(username: signInData.userName, userId: signInData.userId)
                 closure(.success(authUser))
             } else {
