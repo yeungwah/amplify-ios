@@ -13,8 +13,8 @@ extension AuthCategory: AuthCategoryUserBehavior {
         return plugin.getCurrentUser()
     }
 
-    public func getCurrentUserAsync() async -> AuthUser? {
-        return await plugin.getCurrentUserAsync()
+    public func getCurrentUser() async -> AuthUser? {
+        return await plugin.getCurrentUser()
     }
 
     @discardableResult

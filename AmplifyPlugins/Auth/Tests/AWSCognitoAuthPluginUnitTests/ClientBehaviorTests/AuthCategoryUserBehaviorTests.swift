@@ -25,12 +25,12 @@ class AuthCategoryUserBehaviorTests: XCTestCase {
         let authState: AuthState = .notConfigured
         let plugin = try createPlugin(authState: authState)
 
-        let user = await plugin.getCurrentUserAsync()
+        let user = await plugin.getCurrentUser()
 
         XCTAssertNil(user)
     }
 
-    func testGetCurrentUser() throws {
+    func testGetCurrentUserNonAsync() throws {
         let userId = "abc123"
         let userName = "xyz987"
         let authState = Defaults.makeAuthState(userId: userId, userName: userName)
@@ -49,7 +49,7 @@ class AuthCategoryUserBehaviorTests: XCTestCase {
         let authState = Defaults.makeAuthState(userId: userId, userName: userName)
         let plugin = try createPlugin(authState: authState)
 
-        let user = await plugin.getCurrentUserAsync()
+        let user = await plugin.getCurrentUser()
         
         XCTAssertNotNil(user)
         XCTAssertEqual(user?.userId, userId)

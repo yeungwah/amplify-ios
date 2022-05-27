@@ -100,7 +100,7 @@ class MockAuthCategoryPlugin: MessageReporter, AuthCategoryPlugin {
         fatalError()
     }
 
-    public func getCurrentUserAsync() async -> AuthUser? {
+    public func getCurrentUser() async -> AuthUser? {
         fatalError()
     }
 
