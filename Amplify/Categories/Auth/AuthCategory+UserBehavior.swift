@@ -17,6 +17,10 @@ extension AuthCategory: AuthCategoryUserBehavior {
         return await plugin.getCurrentUser()
     }
 
+    public func getCurrentUser(closure: @escaping (Result<AuthUser?, Error>) -> Void) {
+        plugin.getCurrentUser(closure: closure)
+    }
+
     @discardableResult
     public func fetchUserAttributes(options: AuthFetchUserAttributeOperation.Request.Options? = nil,
                                     listener: AuthFetchUserAttributeOperation.ResultListener?)

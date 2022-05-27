@@ -21,4 +21,10 @@ class MockAuthStateMachine: StateMachine<AuthState, AuthEnvironment> {
     override func getCurrentState(_ completion: @escaping (AuthState) -> Void) {
         completion(authState)
     }
+
+    override var currentMachinState: AuthState {
+        get async {
+            authState
+        }
+    }
 }

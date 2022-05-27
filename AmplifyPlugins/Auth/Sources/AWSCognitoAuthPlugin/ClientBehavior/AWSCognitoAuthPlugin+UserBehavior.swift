@@ -94,7 +94,7 @@ public extension AWSCognitoAuthPlugin {
     }
 
     func getCurrentUser() async -> AuthUser? {
-        let authState = await authStateMachine.currentAuthState
+        let authState = await authStateMachine.currentMachinState
         if case .configured(let authenticationState, _) = authState,
            case .signedIn(_, let signInData) = authenticationState {
             let authUser = CognitoAuthUser(username: signInData.userName, userId: signInData.userId)
@@ -104,7 +104,7 @@ public extension AWSCognitoAuthPlugin {
         }
     }
 
-    private func getCurrentUser(closure: @escaping (Result<AuthUser?, Error>) -> Void) {
+    func getCurrentUser(closure: @escaping (Result<AuthUser?, Error>) -> Void) {
         authStateMachine.getCurrentState { authState in
             if case .configured(let authenticationState, _) = authState,
                case .signedIn(_, let signInData) = authenticationState {

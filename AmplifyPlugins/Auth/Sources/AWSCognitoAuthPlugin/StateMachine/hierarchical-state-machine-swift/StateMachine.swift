@@ -162,7 +162,7 @@ class StateMachine<
         }
     }
 
-    var currentAuthState: StateType {
+    var currentMachinState: StateType {
         get async {
             await withCheckedContinuation { continuation in
                 self.operationQueue.addOperation {
