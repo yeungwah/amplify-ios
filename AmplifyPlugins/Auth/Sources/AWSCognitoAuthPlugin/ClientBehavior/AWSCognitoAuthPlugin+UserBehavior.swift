@@ -8,11 +8,6 @@
 import Foundation
 import Amplify
 
-struct CognitoAuthUser: AuthUser {
-    let username: String
-    let userId: String
-}
-
 public extension AWSCognitoAuthPlugin {
 
     func fetchUserAttributes(options: AuthFetchUserAttributeOperation.Request.Options? = nil,
@@ -97,7 +92,7 @@ public extension AWSCognitoAuthPlugin {
         let authState = await authStateMachine.currentMachinState
         if case .configured(let authenticationState, _) = authState,
            case .signedIn(_, let signInData) = authenticationState {
-            let authUser = CognitoAuthUser(username: signInData.userName, userId: signInData.userId)
+            let authUser = AWSCognitoAuthUser(username: signInData.userName, userId: signInData.userId)
             return authUser
         } else {
             return nil
@@ -108,7 +103,7 @@ public extension AWSCognitoAuthPlugin {
         authStateMachine.getCurrentState { authState in
             if case .configured(let authenticationState, _) = authState,
                case .signedIn(_, let signInData) = authenticationState {
-                let authUser = CognitoAuthUser(username: signInData.userName, userId: signInData.userId)
+                let authUser = AWSCognitoAuthUser(username: signInData.userName, userId: signInData.userId)
                 closure(.success(authUser))
             } else {
                 closure(.success(nil))
