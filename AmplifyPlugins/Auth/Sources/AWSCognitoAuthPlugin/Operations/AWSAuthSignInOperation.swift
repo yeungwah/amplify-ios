@@ -102,7 +102,13 @@ public class AWSAuthSignInOperation: AmplifySignInOperation,
 
                     self.cancelToken(token)
                     self.finish()
-                }
+                } else if case .resolvingSMSChallenge(let challengeState) = signInState,
+                         case .waitingForAnswer(let challenge) = challengeState {
+                   let delivery = challenge.codeDeliveryDetails
+                   self.dispatch(.init(nextStep: .confirmSignInWithSMSMFACode(delivery, nil)))
+                   self.cancelToken(token)
+                   self.finish()
+               }
             default:
                 break
             }

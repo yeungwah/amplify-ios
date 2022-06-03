@@ -154,8 +154,7 @@ enum Defaults {
 
 }
 
-
-struct MockAmplifyStore: AmplifyAuthCredentialStoreBehavior & AmplifyAuthCredentialStoreProvider {
+struct MockAmplifyStore: AmplifyAuthCredentialStoreBehavior, AmplifyAuthCredentialStoreProvider {
     func saveCredential(_ credential: AmplifyCredentials) throws {
 
     }
