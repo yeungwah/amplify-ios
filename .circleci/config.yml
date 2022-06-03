@@ -31,7 +31,9 @@ orbs:
         steps:
           - checkout:
               path: ~/ios-canaries
+          - run: brew install gnu-sed
           - run: echo 'What is << parameters.simulator-os-version >>'
+          - run: gsed -i "3 i platform :ios, '<< parameters.simulator-os-version >>'" Podfile
           - run: cat Podfile
 
 
