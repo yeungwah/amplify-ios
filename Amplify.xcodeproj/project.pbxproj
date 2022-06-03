@@ -935,7 +935,6 @@
 		0671E539A66859A57E071091 /* Pods-Amplify-AmplifyTestConfigs-AmplifyTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Amplify-AmplifyTestConfigs-AmplifyTests.release.xcconfig"; path = "Target Support Files/Pods-Amplify-AmplifyTestConfigs-AmplifyTests/Pods-Amplify-AmplifyTestConfigs-AmplifyTests.release.xcconfig"; sourceTree = "<group>"; };
 		09D90ABD9EDED6D6B1780253 /* Pods-Amplify-AWSPluginsCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Amplify-AWSPluginsCore.release.xcconfig"; path = "Target Support Files/Pods-Amplify-AWSPluginsCore/Pods-Amplify-AWSPluginsCore.release.xcconfig"; sourceTree = "<group>"; };
 		1FA86170C161C5E46E57A5F9 /* Pods-Amplify-AWSPluginsCore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Amplify-AWSPluginsCore.debug.xcconfig"; path = "Target Support Files/Pods-Amplify-AWSPluginsCore/Pods-Amplify-AWSPluginsCore.debug.xcconfig"; sourceTree = "<group>"; };
-		2104FE3D2849010D007CF949 /* schema.graphql */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = schema.graphql; sourceTree = "<group>"; };
 		2104FE3F28490337007CF949 /* Blog8+Schema.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Blog8+Schema.swift"; sourceTree = "<group>"; };
 		2104FE4028490337007CF949 /* MyNestedModel8.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyNestedModel8.swift; sourceTree = "<group>"; };
 		2104FE4128490338007CF949 /* MyCustomModel8+Schema.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MyCustomModel8+Schema.swift"; sourceTree = "<group>"; };
@@ -1902,7 +1901,6 @@
 				2104FE4428490338007CF949 /* MyNestedModel8+Schema.swift */,
 				2104FE4328490338007CF949 /* Post8.swift */,
 				2104FE4628490338007CF949 /* Post8+Schema.swift */,
-				2104FE3D2849010D007CF949 /* schema.graphql */,
 			);
 			path = OptionalAssociations;
 			sourceTree = "<group>";
@@ -2253,18 +2251,19 @@
 				218F783E275A62A00042334B /* 6V2 */,
 				218F7840275A62AA0042334B /* 7V2 */,
 				215D409F2772317F0077E7DA /* 8V2 */,
+				97F793D727BC670B000153D6 /* CustomerMultipleSecondaryIndexV2.swift */,
+				97F793D927BC6720000153D6 /* CustomerMultipleSecondaryIndexV2+Schema.swift */,
 				218F78C6275AC6B30042334B /* CustomerSecondaryIndexV2.swift */,
 				218F78C8275AC6B30042334B /* CustomerSecondaryIndexV2+Schema.swift */,
+				97F793B527AA0619000153D6 /* CustomerWithMultipleFieldsinPK.swift */,
+				97F793B727AA0667000153D6 /* CustomerWithMultipleFieldsinPK+Schema.swift */,
+				2104FE3B28490087007CF949 /* OptionalAssociations */,
+				97F793B927AA0767000153D6 /* Priority.swift */,
 				218F78E9275E6C080042334B /* schema.graphql */,
 				218F78C7275AC6B30042334B /* TodoCustomTimestampV2.swift */,
 				218F78C9275AC6B30042334B /* TodoCustomTimestampV2+Schema.swift */,
 				218F78C4275AC6B30042334B /* TodoWithDefaultValueV2.swift */,
 				218F78C5275AC6B30042334B /* TodoWithDefaultValueV2+Schema.swift */,
-				97F793B527AA0619000153D6 /* CustomerWithMultipleFieldsinPK.swift */,
-				97F793B727AA0667000153D6 /* CustomerWithMultipleFieldsinPK+Schema.swift */,
-				97F793B927AA0767000153D6 /* Priority.swift */,
-				97F793D727BC670B000153D6 /* CustomerMultipleSecondaryIndexV2.swift */,
-				97F793D927BC6720000153D6 /* CustomerMultipleSecondaryIndexV2+Schema.swift */,
 			);
 			path = TransformerV2;
 			sourceTree = "<group>";
@@ -3175,7 +3174,6 @@
 				6BEE08232533D30800133961 /* OGCScenarioBMGroupPost+Schema.swift */,
 				6BEE081B2533CCFA00133961 /* OGCScenarioBPost.swift */,
 				6BEE081A2533CCFA00133961 /* OGCScenarioBPost+Schema.swift */,
-				2104FE3B28490087007CF949 /* OptionalAssociations */,
 				B9521832237E21B900F53237 /* Post.swift */,
 				B9521831237E21B900F53237 /* Post+Schema.swift */,
 				2129BE002394627B006363A1 /* PostCommentModelRegistration.swift */,
