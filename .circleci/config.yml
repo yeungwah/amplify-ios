@@ -34,6 +34,7 @@ orbs:
           - run: echo 'What is << parameters.simulator-os-version >>'
           - run: cat Podfile
 
+
 defaults: &defaults
   macos:
     xcode: '13.0.0'
@@ -382,14 +383,6 @@ workflows:
   # Jobs are pulled from the getting-started-smoke-test inline orb defined below
   canaries:
     jobs:
-      - getting-started-smoke-test/ios:
-          xcode-version: "13.3.0"
-          simulator-os-version: "15.4"
-          simulator-device: "iPhone 13"
-      - getting-started-smoke-test/ios:
-          xcode-version: "12.5.1"
-          simulator-os-version: "13.7"
-          simulator-device: "iPhone 12"
       - getting-started-smoke-test/ios:
           xcode-version: "11.7.0"
           simulator-os-version: "13.0"
