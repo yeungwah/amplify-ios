@@ -31,17 +31,9 @@ orbs:
         steps:
           - checkout:
               path: ~/ios-canaries
-          - node/install
-          - run: npm install -g @aws-amplify/cli
+          - run: echo 'what is <<parameters.simulator-os-version>>'
           - run: amplify init --quickstart --frontend ios
-          - macos/preboot-simulator:
-              device: <<parameters.simulator-device>>
-              version: <<parameters.simulator-os-version>>
-          - ruby/install-deps
-          - run: pod install
-          - run:
-              name: Run tests
-              command: bundle exec fastlane scan
+
 
 defaults: &defaults
   macos:
